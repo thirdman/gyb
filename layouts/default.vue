@@ -26,8 +26,13 @@
     </v-navigation-drawer>
     <v-app-bar
       :clipped-left="clipped"
-      fixed
+      absolute
+      flat
       app
+      hide-on-scroll
+      
+      color="#111"
+      border="bottom"
     >
       <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer" /> -->
       <!-- <v-btn
@@ -141,3 +146,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.v-application{
+  background: linear-gradient(267deg, #29e1d9, #29a5e1);
+}
+</style>
