@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app >
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -48,14 +48,26 @@
       >
         <v-icon>mdi-minus</v-icon>
       </v-btn> -->
-      
       <v-toolbar-title v-text="title" />
+      <v-spacer />
 
+      <v-btn
+        text
+        @click="goTo('/')"
+      >
+        Home
+      </v-btn>
       <v-btn
         text
         @click="goTo('/gallery')"
       >
         Gallery
+      </v-btn>
+      <v-btn
+        text
+        @click="goTo('/about')"
+      >
+        About
       </v-btn>
       <v-spacer />
       <!-- <v-btn
