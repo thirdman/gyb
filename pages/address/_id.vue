@@ -59,7 +59,7 @@ export default {
     // this.posts = await this.$http.$get('https://api.nuxtjs.dev/posts')
     
       this.assets = await fetch(
-        `https://api.opensea.io/api/v1/assets?order_direction=asc&offset=0&limit=20&collection=pandaearth&owner=${searchAddress}`
+        `https://api.opensea.io/api/v1/assets?order_direction=asc&offset=0&limit=50&collection=pandaearth&owner=${searchAddress}`
         // 'https://api.opensea.io/api/v1/assets?token_ids=23&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'
         // 'https://api.opensea.io/api/v1/assets?owner=0x663e4229142a27f00bafb5d087e1e730648314c3&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20',
         // 'https://api.opensea.io/api/v1/assets?token_ids=&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'
