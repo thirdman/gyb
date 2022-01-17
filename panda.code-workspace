@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "[One Dark Pro Monokai Darker]": {
+        "activityBar.background": "#0a0a0a",
+        "sideBar.background": "#111111",
+        "sideBar.border": "#191919"
+      }
+    }
+  }
+}
