@@ -116,7 +116,15 @@
 </template>
 
 <script>
+  import ogImage from '@/assets/images/preview.png';
 export default {
+  head () {
+    return {
+      meta: [
+        { hid: 'og:image', property: 'og:image', content: this.BASE_URL+ ogImage }
+      ]
+    }
+  },
   data () {
     return {
       clipped: false,
