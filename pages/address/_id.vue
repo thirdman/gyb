@@ -7,17 +7,21 @@
       <div v-else-if="$fetchState.error">Error: {{ $fetchState.error.message }}</div>
       <v-col v-else>
         <v-row >
-            <v-col>
-                <v-btn @click="handleRefresh" >refresh</v-btn>
-                <v-btn @click="handleNext" >Next Page</v-btn>
+            <v-col class="mb-4 pb-2">
+                <v-btn v-if="!tokenId" @click="handleRefresh" >Reset</v-btn>
+                <v-btn v-if="!tokenId" @click="handleNext" >Next Page</v-btn>
                 <v-btn @click="handleConnect" v-if="!walletAddress">connect wallet</v-btn>
                 <div v-if="walletAddress">Connected</div>
             </v-col>
         </v-row>
-        <v-row>
-          <div class="border-all">
-            <div>Showing Pandas for {{searchAddress}}</div>
-          </div>
+        <v-row >
+          <v-col class="text-center mb-4 pa-2">
+                <v-divider />
+            <div v-if="!tokenId">Showing {{assets.length}} Panda{{assets.length > 1 ? 's' : ''}} for {{searchAddress}}</div>
+            <div v-if="tokenId">Showing Panda {{tokenId}}</div>
+            <div v-if="!tokenId">Showing {{assets.length}}</div>
+            
+          </v-col>
         </v-row>
         <v-dialog
           
@@ -52,20 +56,21 @@
                 <div>{{detail.owner.address}}</div>
                 <label>Active Address</label><br />
                 <div>{{walletAddress || "Wallet not Connected"}}</div><br />
+                <div >{{isOwner ? "You!" : ''}}</div>
               </div> 
               </v-col>
-              <v-col v-if="walletAddress">
+              <v-col >
                 <v-card flat max-width="300px" >
                   <v-card-text class="px-0">
                     <v-img width="100px" :src="detail.image_thumbnail_url" :style="`background: #${detail.background_color}`" />
-                    <a :href="detail.image_original_url" target="blank" v-if="walletAddress">
+                    <a :href="detail.image_original_url" target="blank" v-if="isOwner">
                       <v-icon small>mdi-open-in-new</v-icon> View Original Image
                       </a>
                   </v-card-text>
                 </v-card>
                 
-                <!-- <div v-if="walletAddress === detail.owner.address" >{{detail.owner.address}}</div>
-                <div v-if="walletAddress === detail.owner.address" >is Owner</div> -->
+                <div v-if="walletAddress === detail.owner.address" >{{detail.owner.address}}</div>
+                <div v-if="walletAddress === detail.owner.address" >is Owner</div>
               </v-col> 
             </v-row>
             </v-card-text>
@@ -106,7 +111,7 @@
               <v-img :src="asset.image_preview_url" height="260"  />
             </v-card-text>
           </v-card>
-          {{assets.length}}
+          
         </div>
       </v-col>
     </v-col>
@@ -176,8 +181,10 @@ export default {
   created(){
     // console.log('id', this.$route.params.id)
     const {searchAddress} = this;
-    const {params } = this.$route;
+    const {params, query } = this.$route;
+    console.log('thisroute', this.$route)
     this.searchAddress = params.id
+    this.tokenId = query.id
     console.log('the search address is', searchAddress)
   },
   mounted(){
@@ -195,15 +202,44 @@ export default {
 
   
   },
-  
+  computed: {
+    isOwner(){
+      const {walletAddress, detail } = this;
+      if(!walletAddress || !detail) {return false}
+      const tokenOwner = detail && detail.owner.address
+      const isSame = this.stringEquals(tokenOwner, walletAddress);
+      console.log('is owner tokenOwner', tokenOwner, walletAddress, isSame)
+      
+      return isSame
+    }
+  },
   async fetch() {
     const {
       searchAddress,
       ids,
       offset,
-      tokenId
+      tokenId,
+
     } = this;
-    
+    if(searchAddress === 'all'){
+      this.assets = await fetch(
+        `https://api.opensea.io/api/v1/assets?token_ids=${tokenId}&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20`
+      ).then((response) => {
+      // The response is a Response instance.
+      // You parse the data into a useable format using `.json()`
+        return response.json();
+      }).then(res => {
+        console.log('res sinfle', res)
+        const {assets } = res;
+        const detail = assets && assets[0]
+        console.log('detail', detail)
+        this.detail = detail
+        this.showDialog = true
+        return assets
+      })
+      
+      return
+    } 
     // this.posts = await this.$http.$get('https://api.nuxtjs.dev/posts')
     console.log('about to get assets. Offset: ', offset, ' tokenid: ', tokenId,  ' searchAddress: ', searchAddress )
       this.assets = await fetch(
@@ -279,7 +315,11 @@ export default {
       }
 
     },
-    
+    stringEquals(a, b) {
+    return typeof a === 'string' && typeof b === 'string'
+        ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
+        : a === b;
+}
 
   }
 }
