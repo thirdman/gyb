@@ -1,21 +1,27 @@
 <template>
   <v-row>
     <v-col class="text-center">
-      <div>Gallery</div>
       <div>
         <label>
-          Your Wallet Address
+          Wallet Address
         </label>
         <v-text-field
         outlined
         filled
         :value="searchAddress"></v-text-field>
-        <v-btn @click="handleSearch">sdfg</v-btn>
+        <v-btn @click="handleSearch">Find</v-btn>
       </div>
     </v-col>
   </v-row>
 </template>
 
+<style >
+label{
+  font-size: .875em;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+</style>
 
 <script>
 
