@@ -46,7 +46,12 @@
                 <div>{{trait.value}}</div>
               </div>
             </div>
-              
+              <div 
+
+                class="trait">
+                <label>Background Color</label><br />
+                <div>#{{detail.background_color}}</div>
+              </div>
               <v-divider/>
             <v-row> 
               <v-col>
