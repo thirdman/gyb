@@ -6,10 +6,10 @@
         <h1>Panda Earth Archive</h1>
       </div>
        <div class="text-center">
-        <nuxt-link to="/gallery">Find your pandas...</nuxt-link>
+        <nuxt-link to="/gallery"><strong>Find your pandas...</strong></nuxt-link>
       </div>
-      <div class="text-center">
-      <v-card elevation="3" width="400px" style="margin: auto;">
+      <div class="text-center mt-4">
+      <v-card rounded elevation="3" width="400px" style="margin: auto;">
         <v-img src="https://pandaearth.online/preview.png" width="400px" />
       </v-card>
       </div>
