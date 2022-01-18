@@ -19,8 +19,7 @@
                 <v-divider />
             <div v-if="!tokenId">Showing {{assets.length}} Panda{{assets.length > 1 ? 's' : ''}} for {{searchAddress}}</div>
             <div v-if="tokenId">Showing Panda {{tokenId}}</div>
-            <div v-if="!tokenId">Showing {{assets.length}}</div>
-            
+            <!-- <div v-if="!tokenId">Showing {{assets.length}}</div> -->
           </v-col>
         </v-row>
         <v-dialog
