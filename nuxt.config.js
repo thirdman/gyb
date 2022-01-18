@@ -21,6 +21,16 @@ export default {
         property: "og:image",
         content: "https://pandaearth.online/preview.png",
       },
+      {
+        hid: "og:image:width",
+        property: "og:image:width",
+        content: "1200",
+      },
+      {
+        hid: "og:image:height",
+        property: "og:image:height",
+        content: "675",
+      },
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   },
