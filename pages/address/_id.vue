@@ -50,7 +50,7 @@
 
                 class="trait">
                 <label>Background Color</label><br />
-                <div>#{{detail.background_color}}</div>
+                <div><span class="swatch" :style='`background-color: #${detail.background_color}; width: 20px; height: 20px; display: inline-block; border-radius: 4px;`'>&nbsp;</span> #{{detail.background_color}} </div>
               </div>
               <v-divider/>
             <v-row> 
