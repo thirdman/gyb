@@ -8,7 +8,9 @@
         <v-text-field
         outlined
         filled
-        :value="searchAddress"></v-text-field>
+        v-model="searchAddress"
+        
+        ></v-text-field>
         <v-btn @click="handleSearch">Find</v-btn>
       </div>
     </v-col>
@@ -34,7 +36,9 @@ export default {
   methods: {
     handleSearch(){
       console.log(searchAddress)
+      
       const {searchAddress} = this;
+      console.log('searchAddress', searchAddress)
       this.$router.push(`/address/${searchAddress}`)
     }
   }

@@ -8,7 +8,8 @@
       <v-col v-else>
         <v-row >
             <v-col>
-                <v-btn @click="this.$fetch" >refresh</v-btn>
+                <v-btn @click="handleRefresh" >refresh</v-btn>
+                <v-btn @click="handleNext" >Next Page</v-btn>
                 <v-btn @click="handleConnect" v-if="!walletAddress">connect wallet</v-btn>
                 <div v-if="walletAddress">Connected</div>
             </v-col>
@@ -155,9 +156,11 @@ export default {
   data() {
     return {
       searchAddress: '',
+      offset: 0,
       ids: [],
       assets: [],
       walletAddress: null,
+      tokenId: null,
       detail: null,
       showDialog: false,
       providerOptions: {
@@ -172,8 +175,10 @@ export default {
   },
   created(){
     // console.log('id', this.$route.params.id)
+    const {searchAddress} = this;
     const {params } = this.$route;
     this.searchAddress = params.id
+    console.log('the search address is', searchAddress)
   },
   mounted(){
     this.$nextTick(async () => {
@@ -194,13 +199,15 @@ export default {
   async fetch() {
     const {
       searchAddress,
-      ids
+      ids,
+      offset,
+      tokenId
     } = this;
     
     // this.posts = await this.$http.$get('https://api.nuxtjs.dev/posts')
-    
+    console.log('about to get assets. Offset: ', offset, ' tokenid: ', tokenId,  ' searchAddress: ', searchAddress )
       this.assets = await fetch(
-        `https://api.opensea.io/api/v1/assets?order_direction=asc&offset=0&limit=50&collection=pandaearth&owner=${searchAddress}`
+        `https://api.opensea.io/api/v1/assets?order_direction=asc&offset=${offset}&limit=50&collection=pandaearth&owner=${searchAddress}`
         // 'https://api.opensea.io/api/v1/assets?token_ids=23&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'
         // 'https://api.opensea.io/api/v1/assets?owner=0x663e4229142a27f00bafb5d087e1e730648314c3&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20',
         // 'https://api.opensea.io/api/v1/assets?token_ids=&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'
@@ -223,6 +230,15 @@ export default {
       const {searchAddress} = this;
       this.$router.push(`/address/${searchAddress}`)
     },
+    handleNext(){
+      this.offset = this.offset + 50;
+      this.$fetch()
+      
+    },
+    handleRefresh(){
+      this.offset = 0;
+      this.$fetch()
+    },
     handleDetail(id){
       console.log('id', id)
       const {assets} = this
@@ -232,7 +248,6 @@ export default {
       this.showDialog = true
     },
     handleCloseDetail(){
-      
       this.detail = null
       this.showDialog = false
     },

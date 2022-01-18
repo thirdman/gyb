@@ -109,6 +109,7 @@
       app
     >
       <span>&copy; {{ new Date().getFullYear() }}</span>
+      <div>Donate: thethirdman.eth</div>
     </v-footer>
   </v-app>
 </template>
