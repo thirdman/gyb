@@ -17,6 +17,13 @@ import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
 
 export default {
+  head () {
+    return {
+      meta: [
+        { hid: 'og:image', property: 'og:image', content: require('~/assets/images/preview.png') }
+      ]
+    }
+  },
   components: {
     Logo,
     VuetifyLogo
