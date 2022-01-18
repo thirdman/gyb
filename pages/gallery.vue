@@ -41,8 +41,15 @@ label{
 </style>
 
 <script>
-
+import ogImage from '@/assets/images/preview.png';
 export default {
+  head () {
+    return {
+      meta: [
+        { hid: 'og:image', property: 'og:image', content: this.BASE_URL+ ogImage }
+      ]
+    }
+  },
   data() {
     return {
       searchAddress: "0xb56d3a16afd1619aa9dbd99918c3ab70f1d41042",
