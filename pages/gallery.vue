@@ -46,7 +46,11 @@ export default {
   head () {
     return {
       meta: [
-        { hid: 'og:image', property: 'og:image', content: require('~/assets/images/preview.png') }
+        { 
+        hid: "og:image",
+        property: "og:image",
+        content: "https://pandaearth.online/preview.png",
+      }
       ]
     }
   },
