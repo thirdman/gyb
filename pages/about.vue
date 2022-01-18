@@ -3,11 +3,10 @@
     <v-col cols="12" sm="8" md="6">
      
       <div class="text-center">
-        <h1>Panda Earth Rediscovered</h1>
+        <h1>About</h1>
       </div>
        <div class="text-center">
-        <p>This is a way to show the pandas</p>
-        <nuxt-link to="/gallery">Find your pandas...</nuxt-link>
+        <p>The original site disappeared. This site allows people to see their pandas.</p>
       </div>
     </v-col>
   </v-row>
