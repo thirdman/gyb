@@ -8,6 +8,11 @@
        <div class="text-center">
         <nuxt-link to="/gallery">Find your pandas...</nuxt-link>
       </div>
+      <div class="text-center">
+      <v-card elevation="3" width="400px" style="margin: auto;">
+        <v-img src="https://pandaearth.online/preview.png" width="400px" />
+      </v-card>
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -20,7 +25,7 @@ export default {
   head () {
     return {
       meta: [
-        { hid: 'og:image', property: 'og:image', content: require('~/assets/images/preview.png') }
+        { hid: 'og:image', property: 'og:image', content: 'https://pandaearth.online/preview.png' }
       ]
     }
   },
