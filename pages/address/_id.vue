@@ -288,9 +288,9 @@ export default {
       this.$router.push(`/address/${searchAddress}`)
     },
     handleNext(){
+      console.log('current offset is', this.offset)
       this.offset = this.offset + 50;
       this.$fetch()
-      
     },
     handleRefresh(){
       this.offset = 0;
