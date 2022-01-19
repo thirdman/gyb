@@ -75,12 +75,16 @@
         About
       </v-btn>
       <v-spacer />
-      <!-- <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
+      <div v-if="walletAddress">
+        Connected
+      </div>
+      <v-btn
+        @click="handleConnect"
+        v-if="!walletAddress"
+        outlined
       >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn> -->
+       Connect Wallet
+      </v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -110,13 +114,18 @@
     >
       <span>&copy; {{ new Date().getFullYear() }}</span>
       <v-spacer />
+      <div>THanks to Queen Cryptoria</div>
+      <v-spacer />
       <div>Donate: thethirdman.eth</div>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-  // import ogImage from '@/assets/images/preview.png';
+  import Web3 from "web3";
+  import Web3Modal from "web3modal";
+  
+  import { mapMutations, mapGetters } from "vuex";
 export default {
   head () {
     return {
@@ -145,14 +154,51 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Panda Earth'
+      title: 'Panda Earth',
+      providerOptions: {
+        walletconnect: {
+          // package: WalletConnectProvider,
+          options: {
+            infuraId: "-"
+          }
+        }
+      },
     }
+  },
+  computed: {
+    ...mapGetters({
+      walletAddress: "uiStore/walletAddress",
+    }),
   },
   methods: {
     goTo(path){
       console.log('path', path);
       this.$router.push(path)
-    }
+    },
+    async handleConnect(){
+      console.log('handle', Web3Modal)
+      const providerOptions = this.providerOptions;
+
+    const web3Modal = new Web3Modal({
+      network: "mainnet", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
+
+    const provider = await web3Modal.connect();
+
+    const web3 = new Web3(provider);
+    
+    // console.log('web3', web3)
+    // Get connected chain id from Ethereum node
+    // const chainId = await web3.eth.getChainId();
+    
+    const accounts = await web3.eth.getAccounts();
+      if(accounts[0]){
+        this.$store.commit("uiStore/setWallet", accounts[0]);
+      }
+
+    },
   }
 }
 </script>

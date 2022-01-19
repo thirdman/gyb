@@ -5,9 +5,12 @@
       <div class="text-center">
         <h1>Panda Earth Archive</h1>
       </div>
-       <div class="text-center">
-        <nuxt-link to="/gallery"><strong>Find your pandas...</strong></nuxt-link>
+       <div class="text-center py-4">
+        <nuxt-link to="/gallery" class="v-btn v-btn--outlined theme--dark v-size--default"><strong>Find your pandas...</strong></nuxt-link>
       </div>
+      <p class="text-center">
+        Note: connected wallets can download original image file
+      </p>
       <div class="text-center mt-4">
       <v-card rounded elevation="3" width="400px" style="margin: auto;">
         <v-img src="https://pandaearth.online/preview.png" width="400px" />

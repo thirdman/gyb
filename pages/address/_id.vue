@@ -10,8 +10,8 @@
             <v-col class="mb-4 pb-2">
                 <v-btn v-if="!tokenId" @click="handleRefresh" >Reset</v-btn>
                 <v-btn v-if="!tokenId" @click="handleNext" >Next Page</v-btn>
-                <v-btn @click="handleConnect" v-if="!walletAddress">connect wallet</v-btn>
-                <div v-if="walletAddress">Connected</div>
+                <!-- <v-btn @click="handleConnect" v-if="!walletAddress">connect wallet</v-btn> -->
+                <!-- <div v-if="walletAddress">Connected</div> -->
             </v-col>
         </v-row>
         <v-row >
@@ -19,6 +19,7 @@
                 <v-divider />
             <div v-if="!tokenId">Showing {{assets.length}} Panda{{assets.length > 1 ? 's' : ''}} for {{searchAddress}}</div>
             <div v-if="tokenId">Showing Panda {{tokenId}}</div>
+            
             <!-- <div v-if="!tokenId">Showing {{assets.length}}</div> -->
           </v-col>
         </v-row>
@@ -103,7 +104,8 @@
           v-for="(asset, index) in assets" :key="index"
           width="260"
           light
-          elevation="5"
+          elevation="1"
+          class="asset"
           style="margin: 12px;"
           @click="handleDetail(asset.id)"
           >
@@ -144,6 +146,14 @@
 .loading-icon{
   animation:spin 1s linear infinite;
 }
+.asset{
+  transition: .3s ease box-shadow, .3s ease-in-out transform;
+  transform: translateY(0px);
+}
+.asset:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2),0 5px 8px 0 rgba(0,0,0,.14),0 1px 14px 0 rgba(0,0,0,.12) !important;
+}
 label{
   font-size: .875em;
   text-transform: uppercase;
@@ -160,6 +170,7 @@ label{
 
   import Web3 from "web3";
   import Web3Modal from "web3modal";
+  import { mapMutations, mapGetters } from "vuex";
 export default {
 
   data() {
@@ -168,7 +179,7 @@ export default {
       offset: 0,
       ids: [],
       assets: [],
-      walletAddress: null,
+      walletAddress2: null,
       tokenId: null,
       detail: null,
       showDialog: false,
@@ -207,6 +218,9 @@ export default {
   
   },
   computed: {
+    ...mapGetters({
+      walletAddress: "uiStore/walletAddress",
+    }),
     isOwner(){
       const {walletAddress, detail } = this;
       if(!walletAddress || !detail) {return false}
@@ -265,6 +279,9 @@ export default {
     console.log('assets:', this.assets)
   },
   methods: {
+    ...mapMutations({
+      setWallet: "uiStore/setWallet",
+    }),
     handleSearch(){
       console.log(searchAddress)
       const {searchAddress} = this;
@@ -315,15 +332,16 @@ export default {
     
     const accounts = await web3.eth.getAccounts();
       if(accounts[0]){
-        this.walletAddress = accounts[0];
+        // this.walletAddress = accounts[0];
+        this.$store.commit("uiStore/setWallet", accounts[0]);
       }
 
     },
     stringEquals(a, b) {
-    return typeof a === 'string' && typeof b === 'string'
+      return typeof a === 'string' && typeof b === 'string'
         ? a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
         : a === b;
-}
+    }
 
   }
 }
