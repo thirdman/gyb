@@ -30,8 +30,9 @@
       flat
       app
       hide-on-scroll
-      color="bg"
+      
       border="bottom"
+      color="transparent" 
     >
       <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer" /> -->
       <!-- <v-btn
