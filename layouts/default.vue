@@ -30,8 +30,7 @@
       flat
       app
       hide-on-scroll
-      
-      color="#111"
+      color="bg"
       border="bottom"
     >
       <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer" /> -->
@@ -111,10 +110,11 @@
     <v-footer
       :absolute="!fixed"
       app
+      color="bg"
     >
       <span>&copy; {{ new Date().getFullYear() }}</span>
       <v-spacer />
-      <div>THanks to Queen Cryptoria</div>
+      <div>Thanks to Queen Cryptoria</div>
       <v-spacer />
       <div>Donate: thethirdman.eth</div>
     </v-footer>
