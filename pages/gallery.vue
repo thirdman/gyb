@@ -1,6 +1,10 @@
 <template>
   <v-row>
+    
     <v-col class="text-center" >
+      <p class="text-center">
+        Note: connected wallets can download original image file
+      </p>
       <v-card outlined class="mt-1 my-auto" max-width="450px"  style="background: rgb(25 153 206 / 68%); margin-left: auto; margin-right: auto;">
       <v-card-title>Wallet Address</v-card-title>
         <v-card-text>
