@@ -88,6 +88,7 @@ export default {
       this.searchAddress = walletAddress
       this.$router.push(`/address/${walletAddress}`)
     },
+    
     handleSearchToken(){
       console.log('about to find token')
       const {tokenId, searchAddress = ''} = this;

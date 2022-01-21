@@ -40,9 +40,15 @@
               <!-- <v-btn icon small  @click="handleDetail(asset.id)">
                 
               </v-btn> -->
+              <span class="trait-pop" >
+                {{getTrait(asset.traits, 'gen')}}
+              </span>
+              <span class="trait-pop" >
+                {{getTrait(asset.traits, 'purity')}}
+              </span>
             </v-card-subtitle>
             <v-card-text :style='`background: #${asset.background_color}`' >
-              <v-img :src="asset.image_preview_url" height="80"  />
+              <v-img :src="asset.image_preview_url" height="90"  />
             </v-card-text>
           </v-card>
           <div class="text-body-2" v-if="asset.last_sale">
@@ -78,6 +84,23 @@
 .asset:hover{
   transform: translateY(-2px);
   box-shadow: 0 3px 5px -1px rgba(0,0,0,.2),0 5px 8px 0 rgba(0,0,0,.14),0 1px 14px 0 rgba(0,0,0,.12) !important;
+}
+.trait-pop{
+  font-size: .75rem;
+  background: #146388;
+  border-radius: 1rem;
+  color: #fff;
+  font-weight: bold;
+  padding: 2px;
+  display: inline-block;
+  line-height: 1rem;
+  min-width: 1.2rem;
+  position: relative;
+  
+}
+.trait-pop + .trait-pop{
+  margin-left: -3px;
+  background: #3287af;
 }
 label{
   font-size: .875em;
@@ -141,23 +164,6 @@ export default {
       return
     } 
     
-    // console.log('about to get assets. Offset: ', offset, ' tokenid: ', tokenId,  ' searchAddress: ', searchAddress )
-    //   this.assets = await fetch(
-    //     `https://api.opensea.io/api/v1/assets?order_direction=asc&offset=${offset}&limit=50&collection=pandaearth&owner=${searchAddress}`
-    //     // 'https://api.opensea.io/api/v1/assets?token_ids=23&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'
-    //     // 'https://api.opensea.io/api/v1/assets?owner=0x663e4229142a27f00bafb5d087e1e730648314c3&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20',
-    //     // 'https://api.opensea.io/api/v1/assets?token_ids=&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'
-    //   ).then((response) => {
-    //   // The response is a Response instance.
-    //   // You parse the data into a useable format using `.json()`
-    //     return response.json();
-    //   }).then(res => {
-    //     console.log('res', res)
-    //     const {assets } = res;
-        
-    //     return assets
-    //   })
-    
     console.log('assets:', this.assets)
   },
   methods: {
@@ -169,7 +175,13 @@ export default {
       }
       
       this.$router.push(`/address/all?id=${id}`)
-    }
-  }
+    },
+    getTrait(traits, target){
+      
+      const trait = traits.find(trait => trait.trait_type === target);
+      const value = trait && trait.value;
+      return value
+    },
+  },
 }
 </script>
