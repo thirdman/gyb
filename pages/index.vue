@@ -4,17 +4,17 @@
     <v-col cols="12" sm="8" md="6">
      
       <div class="text-center">
-        <h1>Panda Earth Archive</h1>
+        <h1>Panda Earth Info </h1>
       </div>
        <div class="text-center py-4">
         <nuxt-link to="/gallery" class="v-btn v-btn--outlined theme--dark v-size--default"><strong>Find your pandas...</strong></nuxt-link>
       </div>
-      
-      <div class="text-center mt-4">
+      <v-divider />
+      <!-- <div class="text-center mt-4">
       <v-card rounded elevation="3" width="400px" style="margin: auto;">
         <v-img src="https://pandaearth.online/preview.png" width="400px" />
       </v-card>
-      </div>
+      </div> -->
       
     </v-col>
   </v-row>
@@ -22,6 +22,36 @@
     <div v-if="$fetchState.pending"><v-icon large class="loading-icon">mdi-loading</v-icon> Loading ...</div>
     <div v-else-if="$fetchState.error">Error: {{ $fetchState.error.message }}</div>
     <v-col v-else class="text-center">
+      <h2>Recent Listings</h2>
+      <div class="gallery-wrap " v-if="events">
+        <div class="gallery-item" v-for="(event, index) in events" :key="index"
+        style="margin: 4px;" 
+          >
+          <v-card 
+          width="240"
+          light
+          elevation="1"
+          class="asset"
+          
+          @click="handleGoToDetail(event.asset.token_id)"
+          >
+            
+            <v-card-subtitle  class="ma-0 pa-1" ><span>{{event.event_type === 'created' ? 'Listed' : event.event_type}} {{formatDate(event.created_date)}}</span>
+           
+              
+            </v-card-subtitle>
+            <v-card-text :style='`background: #${event.asset.background_color}`' >
+              <v-img :src="event.asset.image_preview_url" height="240"  />
+            </v-card-text>
+          </v-card>
+          <div class="text-body-2" v-if="event.starting_price">
+            <img alt="ETH" class=" Price--eth-icon" src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg" size="16">
+            {{(event.starting_price / 1e+18 ).toFixed(2) }}
+            
+            <!-- <span style="font-weight: bold">{{( asset.last_sale.total_price / 1e+18 ).toFixed(2) }}</span> -->
+          </div>
+        </div>
+      </div>
       <label>Recent Sales</label>
       <div class="gallery-wrap " >
         <div class="gallery-item" v-for="(asset, index) in assets" :key="index"
@@ -58,6 +88,7 @@
           </div>
         </div>
       </div>
+      
     </v-col>
   </v-row>
 </v-container>
@@ -116,6 +147,8 @@ label{
 <script>
 import Logo from '~/components/Logo.vue'
 import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import { format, formatDistance, formatRelative, subDays } from 'date-fns'
+
 
 export default {
   head () {
@@ -134,8 +167,12 @@ export default {
       tokenId: '',
       offset: 0,
       mode: 'all',
-      assets: null
+      assets: null,
+      events: null,
     }
+  },
+  mounted(){
+    this.getEvents();
   },
   async fetch() {
     const {
@@ -143,7 +180,7 @@ export default {
       offset,
       tokenId,
     } = this;
-    if(mode === 'all'){
+    
       this.assets = await fetch(
         // `https://api.opensea.io/api/v1/assets?asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20`
         `https://api.opensea.io/api/v1/assets?order_direction=desc&order_by=sale_date&offset=${offset}&limit=16&collection=pandaearth`
@@ -152,7 +189,7 @@ export default {
       // You parse the data into a useable format using `.json()`
         return response.json();
       }).then(res => {
-        console.log('res sinfle', res)
+        console.log('res assets sold', res)
         const {assets } = res;
         // const detail = assets && assets[0]
         // console.log('detail', detail)
@@ -161,10 +198,30 @@ export default {
         return assets
       })
       
-      return
-    } 
+      
+
+  //     this.listings = await fetch(
+  //       `https://api.opensea.io/api/v1/events?collection_slug=pandaearth&only_opensea=false&offset=0&limit=20`
+  //       // `https://api.opensea.io/api/v1/assets?asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20`
+  // //       `https://api.opensea.io/api/v1/assets?order_direction=asc&order_by=sale_price&offset=${offset}&limit=16&collection=pandaearth`
+  //     ).then((response) => {
+  //     // The response is a Response instance.
+  //     // You parse the data into a useable format using `.json()`
+  //       return response.json();
+  //     }).then(res => {
+  //       console.log('res listings', res)
+  //       const {assets} = res;
+  //       // const detail = assets && assets[0]
+  //       // console.log('detail', detail)
+  //       // this.detail = detail
+  //       // this.showDialog = true
+  //       return assets
+  //     })
+    
     
     console.log('assets:', this.assets)
+    // console.log('listings:', this.listings)
+      return
   },
   methods: {
   handleGoToDetail(id){
@@ -182,6 +239,42 @@ export default {
       const value = trait && trait.value;
       return value
     },
+    formatDate(theData){
+      const relativeDate = formatRelative(new Date(theData), new Date())
+      console.log('relative', relativeDate)
+      return relativeDate
+    },
+
+    async getEvents(){
+      console.log('getevents', this)
+      console.log('getevents', this.$axios)
+      
+      const { data, headers } = await this.$axios.get(`https://api.opensea.io/api/v1/events?collection_slug=pandaearth&only_opensea=false&offset=0&limit=20&event_type=created`, {
+        // withCredentials: true
+        headers: {
+          'X-API-KEY': '224a36b5b34d45a29a6bf385b13356ee'
+        }
+      });
+      console.log('data', 'headers', data, headers)
+      if(data){
+        const {asset_events} = data
+        console.log('asset_events', asset_events)
+        this.events = asset_events;
+
+//         const today = format(new Date(), "'Today is a' eeee")
+//         const distance = formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true })
+// //=> "3 days ago"
+
+// const relative = formatRelative(subDays(new Date(), 3), new Date())
+
+// //=> "last Friday at 7:26 p.m."
+//         console.log('today ', today)
+//         console.log('today ', distance)
+//         console.log('today ', relative)
+
+
+      }
+    }
   },
 }
 </script>

@@ -9,9 +9,11 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
     "@walletconnect/web3-provider": "^1.7.1",
     "api": "^4.2.0",
     "core-js": "^3.6.5",
+    "date-fns": "^2.28.0",
     "nuxt": "^2.14.6",
     "web3": "^1.7.0",
     "web3modal": "^1.9.5",
