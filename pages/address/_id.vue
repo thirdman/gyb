@@ -239,9 +239,16 @@ export default {
       tokenId,
 
     } = this;
+     const myHeaders = new Headers({
+          'Accept': 'application/json',
+          'X-API-KEY': '224a36b5b34d45a29a6bf385b13356ee'
+        });
+
+   
     if(searchAddress === 'all'){
       this.assets = await fetch(
-        `https://api.opensea.io/api/v1/assets?token_ids=${tokenId}&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20`
+        `https://api.opensea.io/api/v1/assets?token_ids=${tokenId}&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20`,
+        {headers: myHeaders}
       ).then((response) => {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`
@@ -261,7 +268,8 @@ export default {
     // this.posts = await this.$http.$get('https://api.nuxtjs.dev/posts')
     console.log('about to get assets. Offset: ', offset, ' tokenid: ', tokenId,  ' searchAddress: ', searchAddress )
       this.assets = await fetch(
-        `https://api.opensea.io/api/v1/assets?order_direction=asc&offset=${offset}&limit=50&collection=pandaearth&owner=${searchAddress}`
+        `https://api.opensea.io/api/v1/assets?order_direction=asc&offset=${offset}&limit=50&collection=pandaearth&owner=${searchAddress}`,
+        {headers: myHeaders}
         // 'https://api.opensea.io/api/v1/assets?token_ids=23&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'
         // 'https://api.opensea.io/api/v1/assets?owner=0x663e4229142a27f00bafb5d087e1e730648314c3&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20',
         // 'https://api.opensea.io/api/v1/assets?token_ids=&asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20'

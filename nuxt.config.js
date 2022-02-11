@@ -73,7 +73,21 @@ export default {
       },
     },
   },
-
+  // axios config
+  axios: {
+    // WARNING: proxy doesn't work with nuxt generate,
+    // have to use a prefix and set an API_URL
+    proxy: true,
+    "/api": {
+      target: "http://localhost:8000",
+      // target: "http://localhost:3000",
+      // target: "https://api.opensea.io/api/v1",
+      pathRewrite: {
+        "^/api": "https://api.opensea.io/api/v1",
+        changeOrigin: true,
+      },
+    },
+  },
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
 };

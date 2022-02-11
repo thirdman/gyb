@@ -1,8 +1,11 @@
 // import { getField, updateField } from "vuex-map-fields";
 // import { v4 as uuidv4 } from "uuid";
+import Web3 from "web3";
+import { ABI, CONTRACT_ADDRESS } from "./constants.js";
 
 export const state = () => ({
   devMode: true,
+  ActiveContract: null,
   network: "rinkeby",
   walletChain: "ethereum",
   walletAddress: null,
@@ -11,11 +14,21 @@ export const state = () => ({
   walletNetwork: null,
   profileObject: null,
   ensName: "",
+  ownerStatus: null,
+  ownerAddress: null,
+  tokenOwner: null,
+  userIsOwner: null,
   devAddresses: [
     "0x03f0d81c9a73930b8034553fc54152cbd6958d0b", // gareth
     "0xd1c248d1c9879dc3b5a846d4dccc5b7aa8fbf432", // gareth
     "0x63a9dbCe75413036B2B778E670aaBd4493aAF9F3", //natealex
     "0xDbB59151b18Dd72E9AC092706e93De5b5d7a9325", // trislit
+  ],
+  validTokenArray: [
+    "0x663e4229142a27f00bafb5d087e1e730648314c3", // gareth
+  ],
+  validTokenIdArray: [
+    "3430", // gareth
   ],
 });
 
@@ -29,6 +42,10 @@ export const getters = {
   walletNetwork: (state) => state.walletNetwork,
   walletStatus: (state) => state.walletStatus,
   ensName: (state) => state.ensName,
+  ownerStatus: (state) => state.ownerStatus,
+  ownerAddress: (state) => state.ownerAddress,
+  tokenOwner: (state) => state.tokenOwner,
+  userIsOwner: (state) => state.userIsOwner,
 };
 export const mutations = {
   // updateField,
@@ -40,10 +57,120 @@ export const mutations = {
     state.hasWallet = account ? true : false;
     state.walletAddress = account ? account : null;
   },
+  setContract(state, value) {
+    state.ActiveContract = value;
+  },
+  setOwnerStatus(state, value) {
+    state.ownerStatus = value;
+  },
+  setTokenOwner(state, value) {
+    console.log("setTokenOwner setting to ", value);
+    state.tokenOwner = value;
+  },
+  setUserIsOwner(state, value) {
+    state.userIsOwner = value;
+  },
 };
 
 export const actions = {
   async readMap(context, payload) {
     const { mapId, contractId } = payload;
+  },
+  async isOwner(context, payload) {
+    const { tokenOwner } = payload;
+    const { state } = context;
+    const { walletAddress } = state;
+    console.log("isowner", tokenOwner, walletAddress);
+    if (tokenOwner === walletAddress) {
+      context.commit("setUserIsOwner", true);
+    } else {
+      context.commit("setUserIsOwner", false);
+    }
+  },
+  async checkOwner(context, payload) {
+    const { commit, dispatch } = context;
+    const { tokenId } = payload;
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    console.log("checkOwner", tokenId);
+    if (!ActiveContract) {
+      console.error("no ActiveContract");
+      return;
+    }
+    if (!tokenId) {
+      return;
+    }
+    commit("setTokenOwner", "");
+    commit("setOwnerStatus", "working");
+    const tokenOwner = await ActiveContract.methods
+      .ownerOf(tokenId)
+      .call()
+      .then((result) => {
+        console.log("done", result);
+        commit("setOwnerStatus", null);
+        return result;
+      });
+    if (tokenOwner) {
+      console.log("token owner: ", tokenOwner);
+      commit("setTokenOwner", tokenOwner);
+      dispatch("isOwner", { tokenOwner });
+    }
+  },
+  async startApp(context, payload) {
+    const { commit } = context;
+    const { validTokenIdArray } = this;
+
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    console.log("web3", web3);
+    var MyContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    console.log("MyContract", MyContract);
+    // console.log("MyContract", MyContract.methods);
+    // await commit("setContract", MyContract);
+
+    // MyContract.methods
+    //   .ownerOf(23)
+    //   .call()
+    //   .then((result) => {
+    //     console.log("done", result);
+    //   });
+
+    // if (
+    //   typeof adjAniContractLoadedCallback !== "undefined" &&
+    //   adjAni.adjAniState.web3UsingInfura
+    // ) {
+    //   adjAniContractLoadedCallback();
+    // }
+
+    // adjAni.clearTransactions();
+
+    // var accountInterval = setInterval(function () {
+    //   web3.eth.getAccounts(function (err, accounts) {
+    //     // if (window.useInfura) {
+    //     //   return;
+    //     // }
+
+    //     const { walletAddress } = this;
+    //     console.log("walletAddress: ", walletAddress, typeof walletAddress);
+    //     console.log("conencted wallet: ", accounts[0]);
+    //     if (accounts[0] !== walletAddress) {
+    //       // adjAni.adjAniState.account = accounts[0];
+    //       console.log("changing accounts", accounts[0]);
+
+    //       commit("setWallet", accounts[0]);
+    //       web3.eth.defaultAccount = accounts[0];
+    //       // adjAni.adjAniContract.defaultAccount = accounts[0];
+    //       // if (adjAni.adjAniState.account === undefined) {
+    //       //   adjAni.adjAniState.accountUnlocked = false;
+    //       // } else {
+    //       //   adjAni.adjAniState.accountUnlocked = true;
+    //       // }
+
+    //       // if (typeof adjAniContractLoadedCallback !== "undefined") {
+    //       //   adjAniContractLoadedCallback();
+    //       // }
+    //     }
+    //     // adjAni.adjAniState.accountQueried = true;
+    //   });
+    // }, 1000);
   },
 };

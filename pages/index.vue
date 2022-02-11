@@ -181,10 +181,20 @@ export default {
       tokenId,
     } = this;
     
+    const myHeaders = new Headers({
+          'Accept': 'application/json',
+          'X-API-KEY': '224a36b5b34d45a29a6bf385b13356ee'
+        });
+
+      
+
+
       this.assets = await fetch(
         // `https://api.opensea.io/api/v1/assets?asset_contract_address=0x663e4229142a27F00baFB5D087e1e730648314c3&order_direction=desc&offset=0&limit=20`
-        `https://api.opensea.io/api/v1/assets?order_direction=desc&order_by=sale_date&offset=${offset}&limit=16&collection=pandaearth`
+        `https://api.opensea.io/api/v1/assets?order_direction=desc&order_by=sale_date&offset=${offset}&limit=16&collection=pandaearth`,
+        {headers: myHeaders}
       ).then((response) => {
+        console.log('fetch response', response)
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`
         return response.json();
@@ -246,34 +256,38 @@ export default {
     },
 
     async getEvents(){
-      console.log('getevents', this)
-      console.log('getevents', this.$axios)
-      
       const { data, headers } = await this.$axios.get(`https://api.opensea.io/api/v1/events?collection_slug=pandaearth&only_opensea=false&offset=0&limit=20&event_type=created`, {
-        // withCredentials: true
+        // withCredentials: true,
         headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Accept': 'application/json',
           'X-API-KEY': '224a36b5b34d45a29a6bf385b13356ee'
         }
+      })
+      .then((response) => {
+        console.log('response', response)
+        // return response.json();
       });
-      console.log('data', 'headers', data, headers)
-      if(data){
-        const {asset_events} = data
-        console.log('asset_events', asset_events)
-        this.events = asset_events;
+      // console.log('data', 'headers', data, headers, body)
+      
+      // if(body){
+      //   console.log('body', body)
+      // };
+      // if(data){
+      //   const {asset_events} = data
+      //   console.log('asset_events', asset_events)
+      //   this.events = asset_events;
+      //   //         const today = format(new Date(), "'Today is a' eeee")
+      //   //         const distance = formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true })
+      //   // //=> "3 days ago"
 
-//         const today = format(new Date(), "'Today is a' eeee")
-//         const distance = formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true })
-// //=> "3 days ago"
+      //   // const relative = formatRelative(subDays(new Date(), 3), new Date())
 
-// const relative = formatRelative(subDays(new Date(), 3), new Date())
-
-// //=> "last Friday at 7:26 p.m."
-//         console.log('today ', today)
-//         console.log('today ', distance)
-//         console.log('today ', relative)
-
-
-      }
+      //   // //=> "last Friday at 7:26 p.m."
+      //   //         console.log('today ', today)
+      //   //         console.log('today ', distance)
+      //   //         console.log('today ', relative)
+      // }
     }
   },
 }
