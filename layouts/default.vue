@@ -169,6 +169,8 @@ export default {
   computed: {
     ...mapGetters({
       walletAddress: "uiStore/walletAddress",
+      walletNetwork: "uiStore/walletNetwork",
+      targetNetwork: "uiStore/targetNetwork",
     }),
   },
   methods: {
@@ -178,25 +180,29 @@ export default {
     },
     async handleConnect(){
       console.log('handle', Web3Modal)
+      const {targetNetwork = 'mainnet'} = this;
       const providerOptions = this.providerOptions;
+      // const targetNetwork = targetNetwork || 'mainnet'
+      const web3Modal = new Web3Modal({
+        network: targetNetwork, // optional
+        cacheProvider: true, // optional
+        providerOptions // required
+      });
 
-    const web3Modal = new Web3Modal({
-      network: "mainnet", // optional
-      cacheProvider: true, // optional
-      providerOptions // required
-    });
+      const provider = await web3Modal.connect();
 
-    const provider = await web3Modal.connect();
-
-    const web3 = new Web3(provider);
-    
-    // console.log('web3', web3)
-    // Get connected chain id from Ethereum node
-    // const chainId = await web3.eth.getChainId();
-    
-    const accounts = await web3.eth.getAccounts();
+      const web3 = new Web3(provider);
+      
+      // console.log('web3', web3)
+      // Get connected chain id from Ethereum node
+      // const chainId = await web3.eth.getChainId();
+      const networkId = await web3.eth.net.getNetworkType()
+      const accounts = await web3.eth.getAccounts();
       if(accounts[0]){
         this.$store.commit("uiStore/setWallet", accounts[0]);
+        this.$store.commit("uiStore/setWalletNetwork", networkId);
+        this.$store.dispatch("uiStore/getBalances", {mode: 'gyb'});
+        
       }
 
     },

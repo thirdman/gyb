@@ -1,22 +1,29 @@
 // import { getField, updateField } from "vuex-map-fields";
 // import { v4 as uuidv4 } from "uuid";
 import Web3 from "web3";
-import { ABI, CONTRACT_ADDRESS } from "./constants.js";
+import {
+  PANDA_ABI,
+  CONTRACT_ABI,
+  PANDA_CONTRACT_ADDRESS,
+  CONTRACT_ADDRESS,
+} from "./constants.js";
 
 export const state = () => ({
   devMode: true,
   ActiveContract: null,
-  network: "rinkeby",
+  targetNetwork: "rinkeby",
   walletChain: "ethereum",
   walletAddress: null,
   walletStatus: "",
   walletProvider: null,
-  walletNetwork: null,
+  walletNetwork: "none",
   profileObject: null,
   ensName: "",
   ownerStatus: null,
   ownerAddress: null,
   tokenOwner: null,
+  tokenBalances: {},
+  balanceStatus: null,
   userIsOwner: null,
   devAddresses: [
     "0x03f0d81c9a73930b8034553fc54152cbd6958d0b", // gareth
@@ -25,7 +32,8 @@ export const state = () => ({
     "0xDbB59151b18Dd72E9AC092706e93De5b5d7a9325", // trislit
   ],
   validTokenArray: [
-    "0x663e4229142a27f00bafb5d087e1e730648314c3", // gareth
+    "0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc", // Trislit nft 2
+    // "0x663e4229142a27f00bafb5d087e1e730648314c3", // gareth
   ],
   validTokenIdArray: [
     "3430", // gareth
@@ -37,6 +45,7 @@ export const getters = {
   devMode: (state) => state.devMode,
   hasWallet: (state) => state.hasWallet,
   hasChainSelect: (state) => state.hasChainSelect,
+  targetNetwork: (state) => state.targetNetwork,
   walletChain: (state) => state.walletChain,
   walletAddress: (state) => state.walletAddress,
   walletNetwork: (state) => state.walletNetwork,
@@ -46,6 +55,26 @@ export const getters = {
   ownerAddress: (state) => state.ownerAddress,
   tokenOwner: (state) => state.tokenOwner,
   userIsOwner: (state) => state.userIsOwner,
+  tokenBalances: (state) => state.tokenBalances,
+  balanceStatus: (state) => state.balanceStatus,
+  accessByBalance: (state) => {
+    const { tokenBalances } = state;
+    console.log("tokenBalances", tokenBalances);
+    if (!tokenBalances) {
+      return;
+    }
+    const bal1 = tokenBalances["1"] && tokenBalances["1"] > 0;
+    const bal2 = tokenBalances["2"] && tokenBalances["2"] > 0;
+    const bal3 = tokenBalances["3"] && tokenBalances["3"] > 0;
+    const bal4 = tokenBalances["4"] && tokenBalances["4"] > 0;
+    console.log("bal1", bal1);
+    console.log("bal2", bal2);
+    console.log("bal3", bal3);
+    console.log("bal4", bal4);
+    const allow = bal1 && bal2 && bal3 && bal4;
+    console.log("ALLOW?", allow);
+    return allow;
+  },
 };
 export const mutations = {
   // updateField,
@@ -56,6 +85,9 @@ export const mutations = {
     console.log(account ? "setting account true" : "settings account false");
     state.hasWallet = account ? true : false;
     state.walletAddress = account ? account : null;
+  },
+  setWalletNetwork(state, value) {
+    state.walletNetwork = value;
   },
   setContract(state, value) {
     state.ActiveContract = value;
@@ -69,6 +101,14 @@ export const mutations = {
   },
   setUserIsOwner(state, value) {
     state.userIsOwner = value;
+  },
+  setBalanceStatus(state, value) {
+    state.balanceStatus = value;
+  },
+  setTokenBalances(state, object) {
+    const currentBalances = state.tokenBalances || {};
+    const newBalances = { ...currentBalances, ...object };
+    state.tokenBalances = newBalances;
   },
 };
 
@@ -89,9 +129,13 @@ export const actions = {
   },
   async checkOwner(context, payload) {
     const { commit, dispatch } = context;
-    const { tokenId } = payload;
+    const { tokenId, mode = "panda" } = payload;
+    const ABI = mode === "panda" ? PANDA_ABI : CONTRACT_ABI;
+    const CONTRACT =
+      mode === "panda" ? PANDA_CONTRACT_ADDRESS : CONTRACT_ADDRESS;
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    console.log("mode", { mode, ABI, CONTRACT });
+    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT);
     console.log("checkOwner", tokenId);
     if (!ActiveContract) {
       console.error("no ActiveContract");
@@ -116,13 +160,110 @@ export const actions = {
       dispatch("isOwner", { tokenOwner });
     }
   },
+  async getBalance(context, payload) {
+    const { commit, dispatch, state } = context;
+    const { walletAddress } = state;
+    const { tokenId, mode } = payload;
+    const ABI = mode === "panda" ? PANDA_ABI : CONTRACT_ABI;
+    const CONTRACT =
+      mode === "panda" ? PANDA_CONTRACT_ADDRESS : CONTRACT_ADDRESS;
+    console.log("mode", { mode, ABI, CONTRACT });
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    console.log("walletAddress", walletAddress);
+    if (!ActiveContract) {
+      console.error("no ActiveContract");
+      return;
+    }
+
+    const walletBalance = await ActiveContract.methods
+      .balanceOf(walletAddress)
+      .call()
+      .then((result) => {
+        console.log("done", result);
+        // commit("setOwnerStatus", null);
+        return result;
+      });
+    console.log("walletBalance", walletBalance);
+    // if (tokenOwner) {
+    //   console.log("token owner: ", tokenOwner);
+    //   commit("setTokenOwner", tokenOwner);
+    //   dispatch("isOwner", { tokenOwner });
+    // }
+  },
+
+  async getBalances(context, payload) {
+    context.commit("setBalanceStatus", "working");
+    let [balance1, balance2, balance3, balance4, balance5] = await Promise.all([
+      // this.getChildBalance(),
+      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 1 }),
+      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 2 }),
+      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 3 }),
+      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 4 }),
+      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 5 }),
+    ]);
+    console.log("balances", balance1, balance2, balance3, balance4, balance5);
+    context.commit("setBalanceStatus", null);
+  },
+
+  async getChildBalance(context, payload) {
+    const { commit, dispatch, state } = context;
+    const { walletAddress } = state;
+    const { tokenId, mode } = payload;
+    const ABI = CONTRACT_ABI;
+    const CONTRACT = CONTRACT_ADDRESS;
+    console.log("mode", { mode, ABI, CONTRACT });
+    const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    if (!ActiveContract) {
+      console.error("no ActiveContract");
+      return;
+    }
+
+    // console.log("ActiveContract.methods", ActiveContract.methods);
+    // const owner = await ActiveContract.methods
+    //   .owner()
+    //   .call()
+    //   .then((result) => {
+    //     console.log("done", result);
+    //     // commit("setOwnerStatus", null);
+    //     return result;
+    //   })
+    //   .catch((error) => {
+    //     console.log("error: ", error);
+    //   });
+    const walletBalance = await ActiveContract.methods
+      .balanceOf(walletAddress, tokenId)
+      .call()
+      .then((result) => {
+        console.log("balance query done: ", result);
+        // commit("setOwnerStatus", null);
+        return result;
+      })
+      .catch((error) => {
+        console.log("error: ", error);
+      });
+    console.log("walletBalance", walletBalance);
+    if (walletBalance > -1) {
+      const newObj = { [tokenId]: walletBalance };
+      console.log("newObj", newObj);
+      commit("setTokenBalances", newObj);
+      return newObj;
+    }
+    return walletBalance;
+    // if (tokenOwner) {
+    //   console.log("token owner: ", tokenOwner);
+    //   commit("setTokenOwner", tokenOwner);
+    //   dispatch("isOwner", { tokenOwner });
+    // }
+  },
   async startApp(context, payload) {
     const { commit } = context;
     const { validTokenIdArray } = this;
 
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     console.log("web3", web3);
-    var MyContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    var MyContract = new web3.eth.Contract(PANDA_ABI, PANDA_CONTRACT_ADDRESS);
     console.log("MyContract", MyContract);
     // console.log("MyContract", MyContract.methods);
     // await commit("setContract", MyContract);
