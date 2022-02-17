@@ -6,15 +6,15 @@ export default {
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    titleTemplate: "%s - pandaearth",
-    title: "pandaearth",
+    titleTemplate: "%s - NFT ACCCESS",
+    title: "NFT ACCCESS",
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         hid: "description",
         name: "description",
-        content: "Rediscover Panda Earth NFT",
+        content: "NFT ACCCESS",
       },
       {
         hid: "og:image",
@@ -30,7 +30,7 @@ export default {
       {
         hid: "og:image:height",
         property: "og:image:height",
-        content: "675",
+        content: "1200",
       },
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],

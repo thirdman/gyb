@@ -4,7 +4,7 @@
     <v-col cols="12" sm="8" md="6">
      
       <div class="text-center">
-        <h1>Panda Earth Info </h1>
+        <h1>NFT ACCCESS </h1>
       </div>
        <div class="text-center py-4">
         <nuxt-link to="/gallery" class="v-btn v-btn--outlined theme--dark v-size--default"><strong>Find your pandas...</strong></nuxt-link>
