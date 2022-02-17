@@ -25,13 +25,19 @@
       >
         Gallery
       </v-btn> -->
-      <v-btn
+      <!-- <v-btn
         text
         @click="goTo('/admin')"
       >
         Admin
-      </v-btn>
+      </v-btn> -->
       <v-spacer />
+      <v-card v-if="walletNetwork && targetNetwork === walletNetwork" color="success" class="pa-1 mr-2">
+        {{walletNetwork}}
+      </v-card>
+      <v-card v-if="walletNetwork && targetNetwork !== walletNetwork" color="error" class="pa-1 mr-2">
+        Please change to <strong>{{targetNetwork}}</strong> network
+      </v-card>
       <div v-if="walletAddress">
         Connected
       </div>
@@ -68,13 +74,10 @@
     <v-footer
       :absolute="!fixed"
       app
-      color="bg"
+      
     >
       <span>&copy; {{ new Date().getFullYear() }}</span>
       <v-spacer />
-      <div>Thanks to Queen Cryptoria</div>
-      <v-spacer />
-      <div>Donate: thethirdman.eth</div>
     </v-footer>
   </v-app>
 </template>
@@ -156,6 +159,6 @@ export default {
 </script>
 <style scoped>
 .v-application{
-  background: linear-gradient(267deg, #29e1d9, #29a5e1);
+  /* background: linear-gradient(267deg, #29e1d9, #29a5e1); */
 }
 </style>

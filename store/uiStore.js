@@ -16,7 +16,7 @@ export const state = () => ({
   walletAddress: null,
   walletStatus: "",
   walletProvider: null,
-  walletNetwork: "none",
+  walletNetwork: null,
   profileObject: null,
   ensName: "",
   ownerStatus: null,
