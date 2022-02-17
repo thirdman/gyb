@@ -19,7 +19,8 @@ export default {
       {
         hid: "og:image",
         property: "og:image",
-        content: "https://pandaearth.online/preview.png",
+        content:
+          "https://www.superdthailand.com/media/wysiwyg/Test-Logo-Circle-black-transparent.png",
       },
       {
         hid: "og:image:width",

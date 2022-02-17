@@ -154,7 +154,7 @@ export default {
   head () {
     return {
       meta: [
-        { hid: 'og:image', property: 'og:image', content: 'https://pandaearth.online/preview.png' }
+        { hid: 'og:image', property: 'og:image', content: 'https://www.superdthailand.com/media/wysiwyg/Test-Logo-Circle-black-transparent.png' }
       ]
     }
   },
