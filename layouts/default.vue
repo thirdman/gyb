@@ -44,7 +44,7 @@
         Please change to <strong>{{targetNetwork}}</strong> network
       </v-card>
       <div v-if="walletAddress">
-        <v-btn text @click="() => setBalanceDialog(!hasBalanceDialog)"><v-icon color="success" size="small">mdi-wallet</v-icon>
+        <!-- <v-btn text @click="() => setBalanceDialog(!hasBalanceDialog)"><v-icon color="success" size="small">mdi-wallet</v-icon> -->
 
         <span v-if="balanceStatus"><v-icon small class="loading-icon">mdi-loading</v-icon> {{balanceStatus}} ...</span>
         </v-btn>
