@@ -2,24 +2,30 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="12" md="8">
      
-
+      <div class="text-center">
+        <h1>Home</h1>
+      </div>
        
        <div class="text-center">
-        <v-card  outlined color="transparent">
-        <label>WALLET </label>
-        <div v-if="walletAddress">{{walletAddress}}</div>
-        <div>NETWORK: {{walletNetwork}}</div>
-        </v-card>
-        <v-divider />
-        <div >
+         <v-card
+          outlined
+          dark
+          flat
+          v-if="!walletAddress " class="pa-4 mb-4"
+          >
+            <p>This page is visible to all users</p>
+            <p>To obtain access connect an ethereum wallet that owns the Access NFT.</p>
+         </v-card>
+         
+      <div >
         
-          <v-btn :disabled="!walletAddress" v-if="walletAddress && !tokenBalances" @click="() => getBalances({mode: 'gyb'})">Check Balances</v-btn>
-          <v-card light flat div v-if="walletAddress " class="pa-4 mb-4">
             <!-- <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 1, mode: 'gyb'})">Check Balance #1</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 2, mode: 'gyb'})">Check Balance #2</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 3, mode: 'gyb'})">Check Balance #3</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 4, mode: 'gyb'})">Check Balance #4</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 5, mode: 'gyb'})">Check Balance #5</v-btn> -->
+          <v-btn :disabled="!walletAddress" v-if="walletAddress && !tokenBalances" @click="() => getBalances({mode: 'gyb'})">Check Balances</v-btn>
+          <!-- <v-card light flat div v-if="walletAddress " class="pa-4 mb-4">
             <v-card-title>
               <div>{{balanceStatus || "Balances"}}</div>
               <v-spacer />
@@ -40,22 +46,15 @@
               </div>
               <div v-if="balanceStatus"><v-icon small class="loading-icon">mdi-loading</v-icon></div>
             </v-card-actions>
-          </v-card>
+          </v-card> -->
         
         </div>
-        <v-card outlined light  v-if="walletAddress && tokenBalances && !accessByBalance">
+        <v-card
+          dark
+          color="danger"  v-if="walletAddress && tokenBalances && !accessByBalance">
           <h3>Access Denied</h3>
         </v-card>
-        <iframe border="0" v-if="accessByBalance" id="TWframe" width="100%" :height="400" :src="url"></iframe>
-      <!-- <v-card flat div v-if="walletAddress" class="pa-4">
-        <label>TARGET TOKEN (PANDA)</label><br />
-        <v-btn :disabled="ownerStatus ? true :false " @click="() => checkOwner({tokenId: 12, mode: 'panda'})">Check #12 (should be false)</v-btn>
-        <v-btn :disabled="ownerStatus ? true :false " @click="() => checkOwner({tokenId: 3430, mode: 'panda'})">Check #3430 (should be true)</v-btn>
-        <v-btn :disabled="!walletAddress" @click="() => getBalance()">Check Balance</v-btn>
-        <div v-if="ownerStatus">{{ownerStatus}}</div>
-        <div v-if="tokenOwner">Token Owner: {{tokenOwner}}</div>
-        <div v-if="tokenOwner">User is Owner: {{userIsOwner ? "YES" : "NO"}}</div>
-      </v-card> -->
+      
       </div>
     </v-col>
   </v-row>

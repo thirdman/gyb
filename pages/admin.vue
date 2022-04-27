@@ -8,9 +8,7 @@
        
        <div class="text-center">
         <v-card  outlined color="transparent">
-        <label>WALLET </label>
-        <div v-if="walletAddress">{{walletAddress}}</div>
-        <div>NETWORK: {{walletNetwork}}</div>
+        <p>This page is Visible only to those with wallet in the admin whitelist</p>
         </v-card>
         <v-divider />
         <div >

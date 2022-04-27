@@ -10,6 +10,8 @@ import {
 
 export const state = () => ({
   devMode: true,
+  hasWalletDialog: null,
+  hasBalanceDialog: null,
   ActiveContract: null,
   targetNetwork: "rinkeby",
   walletChain: "ethereum",
@@ -22,7 +24,7 @@ export const state = () => ({
   ownerStatus: null,
   ownerAddress: null,
   tokenOwner: null,
-  tokenBalances: {},
+  tokenBalances: null,
   balanceStatus: null,
   userIsOwner: null,
   devAddresses: [
@@ -44,6 +46,8 @@ export const getters = {
   // getField,
   devMode: (state) => state.devMode,
   hasWallet: (state) => state.hasWallet,
+  hasWalletDialog: (state) => state.hasWalletDialog,
+  hasBalanceDialog: (state) => state.hasBalanceDialog,
   hasChainSelect: (state) => state.hasChainSelect,
   targetNetwork: (state) => state.targetNetwork,
   walletChain: (state) => state.walletChain,
@@ -59,28 +63,36 @@ export const getters = {
   balanceStatus: (state) => state.balanceStatus,
   accessByBalance: (state) => {
     const { tokenBalances } = state;
-    console.log("tokenBalances", tokenBalances);
     if (!tokenBalances) {
       return;
     }
+    console.group("tokenBalances");
+    console.log("tokenBalances", tokenBalances);
+    // NOTE: this is a hard coded way of checking. Future versions will automate this.
     const bal1 = tokenBalances["1"] && tokenBalances["1"] > 0;
     const bal2 = tokenBalances["2"] && tokenBalances["2"] > 0;
     const bal3 = tokenBalances["3"] && tokenBalances["3"] > 0;
     const bal4 = tokenBalances["4"] && tokenBalances["4"] > 0;
-    console.log("bal1", bal1);
-    console.log("bal2", bal2);
-    console.log("bal3", bal3);
-    console.log("bal4", bal4);
+    console.log({ bal1, bal2, bal3, bal4 });
+    // console.log("bal1", bal1);
+    // console.log("bal2", bal2);
+    // console.log("bal3", bal3);
+    // console.log("bal4", bal4);
     const allow = bal1 && bal2 && bal3 && bal4;
     console.log("ALLOW?", allow);
+    console.groupEnd();
     return allow;
   },
 };
 export const mutations = {
   // updateField,
-  setWalletChain(state, value) {
-    state.walletChain = value;
+  setWalletDialog(state, value) {
+    state.hasWalletDialog = value;
   },
+  setBalanceDialog(state, value) {
+    state.hasBalanceDialog = value;
+  },
+
   setWallet(state, account) {
     console.log(account ? "setting account true" : "settings account false");
     state.hasWallet = account ? true : false;
@@ -211,8 +223,8 @@ export const actions = {
     const { walletAddress } = state;
     const { tokenId, mode } = payload;
     const ABI = CONTRACT_ABI;
-    const CONTRACT = CONTRACT_ADDRESS;
-    console.log("mode", { mode, ABI, CONTRACT });
+    // const CONTRACT = CONTRACT_ADDRESS;
+    // console.log("mode", { mode, ABI, CONTRACT });
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     if (!ActiveContract) {
@@ -264,7 +276,7 @@ export const actions = {
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     console.log("web3", web3);
     var MyContract = new web3.eth.Contract(PANDA_ABI, PANDA_CONTRACT_ADDRESS);
-    console.log("MyContract", MyContract);
+
     // console.log("MyContract", MyContract.methods);
     // await commit("setContract", MyContract);
 
