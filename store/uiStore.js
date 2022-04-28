@@ -7,8 +7,11 @@ import {
   PANDA_CONTRACT_ADDRESS,
   CONTRACT_ADDRESS,
 } from "./constants.js";
+import { CONFIG } from "../accesswithnft.config.js";
 
 export const state = () => ({
+  isLive: CONFIG.isLive,
+  config: CONFIG,
   devMode: true,
   hasWalletDialog: null,
   hasBalanceDialog: null,
@@ -45,6 +48,7 @@ export const state = () => ({
 export const getters = {
   // getField,
   devMode: (state) => state.devMode,
+  config: (state) => state.config,
   hasWallet: (state) => state.hasWallet,
   hasWalletDialog: (state) => state.hasWalletDialog,
   hasBalanceDialog: (state) => state.hasBalanceDialog,
@@ -269,61 +273,72 @@ export const actions = {
     //   dispatch("isOwner", { tokenOwner });
     // }
   },
-  async startApp(context, payload) {
-    const { commit } = context;
-    const { validTokenIdArray } = this;
 
+  // NFT URI
+  async getNftData(context, payload) {
+    // const { commit } = context;
+    const { mode = "uri", id = "1", contract } = payload;
+    console.log("getNftData", { mode, id, contract });
+    const ABI = CONTRACT_ABI;
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-    console.log("web3", web3);
-    var MyContract = new web3.eth.Contract(PANDA_ABI, PANDA_CONTRACT_ADDRESS);
+    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    if (!ActiveContract) {
+      console.error("no ActiveContract");
+      return;
+    }
+    const nftUri = await ActiveContract.methods
+      .uri(id)
+      .call()
+      .then((result) => {
+        console.log("uri", result);
+        // commit("setOwnerStatus", null);
+        return result;
+      });
 
-    // console.log("MyContract", MyContract.methods);
-    // await commit("setContract", MyContract);
-
-    // MyContract.methods
-    //   .ownerOf(23)
+    if (mode === "uri") {
+      return nftUri;
+    }
+    if (mode === "object") {
+      const { data, headers } = await this.$axios.get(nftUri);
+      console.log("object result = ", data, headers);
+      console.log("typeof data", typeof data);
+      if (typeof data !== "object") {
+        return null;
+      }
+      if (data) {
+        return data;
+      } else {
+        console.error("error getting uri", headers);
+        return;
+      }
+    }
+    if (mode === "src") {
+      const { data, headers } = await this.$axios.get(nftUri);
+      console.log("object result = ", data, headers);
+      if (data) {
+        return data.image;
+      } else {
+        console.error("error getting uri", error);
+        return;
+      }
+    }
+    // console.log("walletBalance", walletBalance);
+    // const walletBalance = await ActiveContract.methods
+    //   .balanceOf(walletAddress)
     //   .call()
     //   .then((result) => {
     //     console.log("done", result);
+    //     // commit("setOwnerStatus", null);
+    //     return result;
     //   });
+    // console.log("walletBalance", walletBalance);
+  },
 
-    // if (
-    //   typeof adjAniContractLoadedCallback !== "undefined" &&
-    //   adjAni.adjAniState.web3UsingInfura
-    // ) {
-    //   adjAniContractLoadedCallback();
-    // }
-
-    // adjAni.clearTransactions();
-
-    // var accountInterval = setInterval(function () {
-    //   web3.eth.getAccounts(function (err, accounts) {
-    //     // if (window.useInfura) {
-    //     //   return;
-    //     // }
-
-    //     const { walletAddress } = this;
-    //     console.log("walletAddress: ", walletAddress, typeof walletAddress);
-    //     console.log("conencted wallet: ", accounts[0]);
-    //     if (accounts[0] !== walletAddress) {
-    //       // adjAni.adjAniState.account = accounts[0];
-    //       console.log("changing accounts", accounts[0]);
-
-    //       commit("setWallet", accounts[0]);
-    //       web3.eth.defaultAccount = accounts[0];
-    //       // adjAni.adjAniContract.defaultAccount = accounts[0];
-    //       // if (adjAni.adjAniState.account === undefined) {
-    //       //   adjAni.adjAniState.accountUnlocked = false;
-    //       // } else {
-    //       //   adjAni.adjAniState.accountUnlocked = true;
-    //       // }
-
-    //       // if (typeof adjAniContractLoadedCallback !== "undefined") {
-    //       //   adjAniContractLoadedCallback();
-    //       // }
-    //     }
-    //     // adjAni.adjAniState.accountQueried = true;
-    //   });
-    // }, 1000);
+  // LEGACY INIT FUNCTION
+  async startApp(context, payload) {
+    // const { commit } = context;
+    // const { validTokenIdArray } = this;
+    // const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+    // var MyContract = new web3.eth.Contract(PANDA_ABI, PANDA_CONTRACT_ADDRESS);
   },
 };

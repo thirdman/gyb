@@ -49,6 +49,7 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
     "@nuxtjs/vuetify",
+    "@nuxtjs/google-fonts",
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
@@ -64,12 +65,12 @@ export default {
         dark: {
           primary: colors.blue.darken2,
           accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
+          secondary: "#292479",
           info: colors.teal.lighten1,
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3,
-          bg: "#146388",
+          bg: "#04093f",
         },
       },
     },
@@ -89,6 +90,19 @@ export default {
       },
     },
   },
+  // FONTS SETUP
+  googleFonts: {
+    families: {
+      "Saira Condensed": true,
+      "Saira+Extra+Condensed": true,
+      // Lato: [100, 300],
+      // Raleway: {
+      //   wght: [100, 400],
+      //   ital: [100]
+      // },
+    },
+  },
+
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
 };

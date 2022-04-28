@@ -1,5 +1,5 @@
 <template>
-  <v-app >
+  <v-app class="bg" id="abkdlfj" :style="{background: $vuetify.theme.themes['dark'].bg}">
     <v-app-bar
       :clipped-left="clipped"
       absolute

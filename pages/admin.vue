@@ -6,21 +6,114 @@
         <h1>Admin</h1>
       </div>
        
-       <div class="text-center">
-        <v-card  outlined color="transparent">
+       <div >
+        <v-card  outlined color="transparent" class="text-center">
         <p>This page is Visible only to those with wallet in the admin whitelist</p>
+        <p>In a production environment this page would be restricted</p>
         </v-card>
         <v-divider />
         <div >
+        <v-card flat div class="mb-4" v-if="config && config.adminAddresses">
+            <v-card-title>Admin Wallets</v-card-title>
+          <v-card-text>
+            <div v-for="(address, index) in config.adminAddresses" :key="index">
+                {{address.toString()}}
+                <span v-if="walletAddress && walletAddress.toString() === address.toString()"><v-icon small color="success" >mdi-check-bold</v-icon></span>
+              </div>
+          </v-card-text>
+        </v-card>
+        <v-card flat div class="mb-4" v-if="config">
+          <v-card-title>Config</v-card-title>
+          <v-card-text>
+            <label>Title</label>
+            <div>{{config.title}}</div>
+            <label>Mode</label>
+            <div>{{config.mode}}</div>
+            <label>Is Live</label>
+            <div>{{config.isLive ? 'yes' : 'no'}}</div>
+            <label>Target Network</label>
+            <div>{{config.targetNetwork}}</div>
+          </v-card-text>
+        </v-card>
+        <v-card flat div class="mb-4" v-if="config">
+          <v-card-title>Required NFT</v-card-title>
+          <v-card-text>
+            <label>Rinkeby Contract</label>
+            <div>{{config.contract.rinkeby}}</div>
+            <label>Rinkeby ID's</label>
+            <!-- <div>
+              <div>
+                {{this.getNftData({mode: 'uri', id: 1, contract: '0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc'})}}
+              </div>
+              <div>
+                {{this.getNftData({mode: 'object', id: 1, contract: '0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc'})}}
+              </div>
+              <div>
+                
+                <Nft id="1" contract="0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc" />
+              </div>
+            </div> -->
+            <div class="nft-list">
+            <div v-for="(nftId, index) in config.nft.rinkeby" :key="`rinkeby-#${index}`" class="nft-list-item">
+                #{{nftId.toString()}}
+                <br />
+                <Nft :id="`${nftId}`" contract="0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc" />
+            </div>
+            </div>
+            <v-divider></v-divider>
+            <label>Main Contract</label>
+            <div>{{config.contract.main}}</div>
+            <label>Main NFTs</label>
+            <div v-for="(nftId, index) in config.nft.main" :key="`main-#${index}`">
+                #{{nftId.toString()}}
+            </div>
+          </v-card-text>
+        </v-card>
         
-          <v-btn :disabled="!walletAddress" v-if="walletAddress && !tokenBalances" @click="() => getBalances({mode: 'gyb'})">Check Balances</v-btn>
-          <v-card light flat div v-if="walletAddress " class="pa-4 mb-4">
+        <v-card flat div class="mb-4" v-if="config">
+          <v-card-title>Messages</v-card-title>
+          <v-card-text>
+            <label>Success</label>
+            <div>{{config.messages.success}}</div>
+            <label>Partial</label>
+            <div>{{config.messages.partial}}</div>
+            <label>Failure</label>
+            <div>{{config.messages.failure}}</div>
+          </v-card-text>
+        </v-card>
+        <v-card flat div class="mb-4" v-if="config">
+          <v-card-title>URLS</v-card-title>
+          <v-card-text>
+            <h3>Rinkeby</h3>
+            <label>Info</label>
+            <div>{{config.urls.rinkeby.info}}</div>
+            <label>Etherscan</label>
+            <div>{{config.urls.rinkeby.etherscan}}</div>
+            <label>Opensea</label>
+            <div>{{config.urls.rinkeby.opensea}}</div>
+            <label>Target</label>
+            <div>{{config.urls.rinkeby.target}}</div>
+            <v-divider></v-divider>
+            <h3>Main</h3>
+            <label>Info</label>
+            <div>{{config.urls.main.info}}</div>
+            <label>Etherscan</label>
+            <div>{{config.urls.main.etherscan}}</div>
+            <label>Opensea</label>
+            <div>{{config.urls.main.opensea}}</div>
+            <label>Target</label>
+            <div>{{config.urls.main.target}}</div>
+            
+          </v-card-text>
+        </v-card>
+          <!-- <v-btn :disabled="!walletAddress" v-if="walletAddress && !tokenBalances" @click="() => getBalances({mode: 'gyb'})">Check Balances</v-btn> -->
+          <!-- <v-card light flat div v-if="walletAddress " class="pa-4 mb-4"> -->
             <!-- <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 1, mode: 'gyb'})">Check Balance #1</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 2, mode: 'gyb'})">Check Balance #2</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 3, mode: 'gyb'})">Check Balance #3</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 4, mode: 'gyb'})">Check Balance #4</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 5, mode: 'gyb'})">Check Balance #5</v-btn> -->
-            <v-card-title>
+            <!-- <v-card-title>
               <div>{{balanceStatus || "Balances"}}</div>
               <v-spacer />
               <v-btn small outlined @click="() => getBalances({mode: 'gyb'})">Check</v-btn>
@@ -40,42 +133,35 @@
               </div>
               <div v-if="balanceStatus"><v-icon small class="loading-icon">mdi-loading</v-icon></div>
             </v-card-actions>
-          </v-card>
+          </v-card> -->
         
         </div>
-        <v-card outlined light  v-if="walletAddress && tokenBalances && !accessByBalance">
+        <!-- <v-card outlined light  v-if="walletAddress && tokenBalances && !accessByBalance">
           <h3>Access Denied</h3>
-        </v-card>
-        <iframe border="0" v-if="accessByBalance" id="TWframe" width="100%" :height="400" :src="url"></iframe>
-      <!-- <v-card flat div v-if="walletAddress" class="pa-4">
-        <label>TARGET TOKEN (PANDA)</label><br />
-        <v-btn :disabled="ownerStatus ? true :false " @click="() => checkOwner({tokenId: 12, mode: 'panda'})">Check #12 (should be false)</v-btn>
-        <v-btn :disabled="ownerStatus ? true :false " @click="() => checkOwner({tokenId: 3430, mode: 'panda'})">Check #3430 (should be true)</v-btn>
-        <v-btn :disabled="!walletAddress" @click="() => getBalance()">Check Balance</v-btn>
-        <div v-if="ownerStatus">{{ownerStatus}}</div>
-        <div v-if="tokenOwner">Token Owner: {{tokenOwner}}</div>
-        <div v-if="tokenOwner">User is Owner: {{userIsOwner ? "YES" : "NO"}}</div>
-      </v-card> -->
+        </v-card> -->
+        
+      
       </div>
     </v-col>
   </v-row>
 </template>
 
 <style scoped>
+.nft-list{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
 .loading-icon{
   animation:spin 1s linear infinite;
 }
 
-label{
-  font-size: .875em;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-@keyframes spin { 
+
+/* @keyframes spin { 
     100% { 
         transform:rotate(360deg); 
     } 
-}
+} */
 
 </style>
 <script>
@@ -88,6 +174,7 @@ export default {
   },
   mounted(){
     console.log('mounted', this.walletAddress)
+    console.log('mounted', this.config)
     if(this.walletAddress){
       this.searchAddress = this.walletAddress
     }
@@ -101,6 +188,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      config: "uiStore/config",
       walletAddress: "uiStore/walletAddress",
       walletNetwork: "uiStore/walletNetwork",
       ownerStatus: "uiStore/ownerStatus",
@@ -126,6 +214,7 @@ export default {
       getBalance: "uiStore/getBalance",
       getBalances: "uiStore/getBalances",
       getChildBalance: "uiStore/getChildBalance",
+      getNftData: "uiStore/getNftData",
     }),
     handleSetUser(){
       const {walletAddress} = this;
