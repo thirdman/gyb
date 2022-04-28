@@ -1,12 +1,23 @@
 <template>
-  <v-card class="NftElement ma-4" elevation="4" outlined  :color="this.status === 'error' ? 'red' : 'secondary'" width="200">
-    <div v-if="this.status">{{this.status}}</div>
+  <v-card 
+  class="NftElement" 
+  :class="`display-${display}`"
+  :elevation="elevation" 
+  outlined  
+  :color="this.status === 'error' ? 'red' : 'secondary'" 
+  :width="size"
+  :height="display=== 'image' ? size : ''"
+  >
+    <div v-if="this.status">
+      <span v-if="this.status && this.status === 'loading'"><v-icon small class="loading-icon">mdi-loading</v-icon></span>
+      {{this.status}}
+      </div>
     <!-- <v-card-title v-if="this.data && this.data.name">
       {{this.data.name}}
     </v-card-title> -->
     
     <img :src="this.data.image" v-if="this.data && this.data.image" />
-    <v-card-text v-if="this.data">
+    <v-card-text v-if="this.data && display=== 'full'">
       <label>ID</label><br />
       <div>#{{this.id}}</div>
       <label>Name</label><br />
@@ -19,8 +30,13 @@
 
 <style lang="scss">
 .NftElement{
-  min-width: 100px;
-  
+  min-width: 80px;
+  margin: 0 auto .5rem;
+  &.display-image{
+    img{
+      object-fit: cover;
+    }
+  }
   // max-height: 300px;
   
   img{
@@ -48,10 +64,23 @@ export default {
     mode: {
       type: String,
       default: null
-    }
+    },
+    display: {
+      type: String,
+      default: 'full'
+    },
+    size: {
+      type: String,
+      default: '200'
+    }, 
+    elevation: {
+      type: String,
+      default: '4'
+    }, 
   },
   data () {
     return {
+      
       status: '',
       data: null,
       src: '',

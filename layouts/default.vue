@@ -71,11 +71,20 @@
               <label>STATUS </label>
               <div v-if="balanceStatus"><v-icon large class="loading-icon">mdi-loading</v-icon> Loading ...</div>
               <div v-if="balanceStatus">{{balanceStatus}}</div>
-              <div v-if="tokenBalances">
-              <div v-for="(value, id, index) in tokenBalances" :key="index">
-                #{{id}} - {{value}}
-                <span v-if="value > 0"><v-icon small color="success" >mdi-check-bold</v-icon></span>
-                <span v-if="value < 1"><v-icon small color="red" >mdi-close-thick</v-icon></span>
+              <div v-if="tokenBalances" class="token-list">
+              <div v-for="(value, id, index) in tokenBalances" :key="index" class="token-list-item text-center">
+                <div>#{{id}}: {{value}}
+                  <span v-if="value > 0"><v-icon small color="success" >mdi-check-bold</v-icon></span>
+                  <span v-if="value < 1"><v-icon small color="red" >mdi-close-thick</v-icon></span>
+                </div>
+                <Nft
+                  :id="`${id}`"
+                  contract="0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc"
+                  size="80"
+                  display="image"
+                  elevation="1"
+                  />
+                
               </div>
             </div>
               <v-card
@@ -137,6 +146,7 @@
               <div v-if="tokenBalances">
               <div v-for="(value, id, index) in tokenBalances" :key="index">
                 #{{id}} - {{value}}
+                <Nft :id="`${id}`" contract="0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc" size="80" mode="image" />
                 <span v-if="value > 0"><v-icon small color="success" >mdi-check-bold</v-icon></span>
                 <span v-if="value < 1"><v-icon small color="red" >mdi-close-thick</v-icon></span>
               </div>
@@ -322,7 +332,16 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
+.token-list{
+  display: flex;
+  flex-direction: row;
+  .token-list-item{
+    width: 200px;
+    // bordeR: 1px solid pink;
+    text-align: center;
+  }
+}
 .v-application{
   /* background: linear-gradient(267deg, #29e1d9, #29a5e1); */
 }

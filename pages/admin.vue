@@ -146,11 +146,14 @@
   </v-row>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .nft-list{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  .nft-list-item{
+    margin-right: 4px;
+  }
 }
 .loading-icon{
   animation:spin 1s linear infinite;
