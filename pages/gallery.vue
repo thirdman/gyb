@@ -6,7 +6,14 @@
       </div>
       <p>This page is visible to user with access NFT in wallet</p>
       
-      <iframe border="0" v-if="accessByBalance" id="TWframe" width="100%" :height="600" :src="url"></iframe>
+      <iframe
+      v-if="accessByBalance"
+      style="border:0; min-height: 600px;" 
+      id="TWframe"
+      width="100%"
+      :height="600"
+      :src="url"
+      ></iframe>
       
     </v-col>
   </v-row>

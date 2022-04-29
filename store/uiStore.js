@@ -16,7 +16,7 @@ export const state = () => ({
   hasWalletDialog: null,
   hasBalanceDialog: null,
   ActiveContract: null,
-  targetNetwork: "rinkeby",
+  targetNetwork: CONFIG.targetNetwork,
   walletChain: "ethereum",
   walletAddress: null,
   walletStatus: "",
@@ -40,9 +40,8 @@ export const state = () => ({
     "0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc", // Trislit nft 2
     // "0x663e4229142a27f00bafb5d087e1e730648314c3", // gareth
   ],
-  validTokenIdArray: [
-    "3430", // gareth
-  ],
+  tokenIdArray:
+    CONFIG.targetNetwork === "rinkeby" ? CONFIG.nft.rinkeby : CONFIG.nft.main,
 });
 
 export const getters = {
@@ -59,6 +58,7 @@ export const getters = {
   walletNetwork: (state) => state.walletNetwork,
   walletStatus: (state) => state.walletStatus,
   ensName: (state) => state.ensName,
+  tokenIdArray: (state) => state.tokenIdArray,
   ownerStatus: (state) => state.ownerStatus,
   ownerAddress: (state) => state.ownerAddress,
   tokenOwner: (state) => state.tokenOwner,
@@ -67,25 +67,47 @@ export const getters = {
   balanceStatus: (state) => state.balanceStatus,
   accessByBalance: (state) => {
     const { tokenBalances } = state;
+    const tokenIdArray =
+      CONFIG.targetNetwork === "rinkeby" ? CONFIG.nft.rinkeby : CONFIG.nft.main;
     if (!tokenBalances) {
       return;
     }
     console.group("tokenBalances");
     console.log("tokenBalances", tokenBalances);
+    // let balances;
+    // tokenIdArray.map((id) => {
+    //   console.log(`map id ${id} pushing to balances`);
+    //   // balances[id] ? : balances[id].push("test");
+    //   // balances[id] =
+    //   //   tokenBalances[id.toString()] && tokenBalances[id.toString()] > 0;
+    // });
+    // console.log("balancesArray", tokenIdArray);
     // NOTE: this is a hard coded way of checking. Future versions will automate this.
-    const bal1 = tokenBalances["1"] && tokenBalances["1"] > 0;
-    const bal2 = tokenBalances["2"] && tokenBalances["2"] > 0;
-    const bal3 = tokenBalances["3"] && tokenBalances["3"] > 0;
-    const bal4 = tokenBalances["4"] && tokenBalances["4"] > 0;
-    console.log({ bal1, bal2, bal3, bal4 });
+    // const bal1 = tokenBalances["1"] && tokenBalances["1"] > 0;
+    // const bal2 = tokenBalances["2"] && tokenBalances["2"] > 0;
+    // const bal3 = tokenBalances["3"] && tokenBalances["3"] > 0;
+    // const bal4 = tokenBalances["4"] && tokenBalances["4"] > 0;
+    // console.log({ bal1, bal2, bal3, bal4 });
     // console.log("bal1", bal1);
     // console.log("bal2", bal2);
     // console.log("bal3", bal3);
     // console.log("bal4", bal4);
-    const allow = bal1 && bal2 && bal3 && bal4;
-    console.log("ALLOW?", allow);
+    // const accessGranted = balances.every((value) => value === true);
+    // const accessGranted = false;
+
+    const minCount = CONFIG.minCount;
+    let accessArray = Object.values(tokenBalances).map((value) => {
+      const hasValue = value && value >= minCount;
+      return hasValue;
+    });
+
+    const accessGranted =
+      accessArray.length > 0 &&
+      tokenIdArray.length === accessArray.length &&
+      accessArray.every((value) => value === true);
+    console.log("accessGranted", accessGranted, accessArray);
     console.groupEnd();
-    return allow;
+    return accessGranted;
   },
 };
 export const mutations = {
@@ -121,10 +143,15 @@ export const mutations = {
   setBalanceStatus(state, value) {
     state.balanceStatus = value;
   },
-  setTokenBalances(state, object) {
-    const currentBalances = state.tokenBalances || {};
-    const newBalances = { ...currentBalances, ...object };
-    state.tokenBalances = newBalances;
+  setTokenBalances(state, object, reset = false) {
+    if (reset) {
+      console.log("reset token balances");
+      state.tokenBalances = null;
+    } else {
+      const currentBalances = state.tokenBalances || {};
+      const newBalances = { ...currentBalances, ...object };
+      state.tokenBalances = newBalances;
+    }
   },
 };
 
@@ -210,14 +237,22 @@ export const actions = {
 
   async getBalances(context, payload) {
     context.commit("setBalanceStatus", "working");
+    const tokenIdArray =
+      CONFIG.targetNetwork === "rinkeby" ? CONFIG.nft.rinkeby : CONFIG.nft.main;
+    if (!tokenIdArray || tokenIdArray.length < 1) {
+      return;
+    }
     let [balance1, balance2, balance3, balance4, balance5] = await Promise.all([
-      // this.getChildBalance(),
-      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 1 }),
-      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 2 }),
-      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 3 }),
-      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 4 }),
-      context.dispatch("getChildBalance", { mode: "gyb", tokenId: 5 }),
+      tokenIdArray.map((id) => {
+        context.dispatch("getChildBalance", { mode: "gyb", tokenId: id });
+      }),
+      // context.dispatch("getChildBalance", { mode: "gyb", tokenId: 1 }),
+      // context.dispatch("getChildBalance", { mode: "gyb", tokenId: 2 }),
+      // context.dispatch("getChildBalance", { mode: "gyb", tokenId: 3 }),
+      // context.dispatch("getChildBalance", { mode: "gyb", tokenId: 4 }),
+      // context.dispatch("getChildBalance", { mode: "gyb", tokenId: 5 }),
     ]);
+
     console.log("balances", balance1, balance2, balance3, balance4, balance5);
     context.commit("setBalanceStatus", null);
   },
@@ -262,7 +297,6 @@ export const actions = {
     console.log("walletBalance", walletBalance);
     if (walletBalance > -1) {
       const newObj = { [tokenId]: walletBalance };
-      console.log("newObj", newObj);
       commit("setTokenBalances", newObj);
       return newObj;
     }

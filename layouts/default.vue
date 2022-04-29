@@ -56,26 +56,35 @@
         >
           <v-card light >
             <v-card-title>
-              <v-icon>mdi-wallet</v-icon> {{walletAddress}}
-              </v-card-title>
+              <span>Wallet Access</span>
+              <v-spacer ></v-spacer>
+              <v-btn icon @click="() => setWalletDialog(false)"><v-icon>mdi-close</v-icon>
+                
+              </v-btn>
+            </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <label>WALLET </label>
-              <div v-if="walletAddress">{{walletAddress}}</div>
-              <label>NETWORK</label>
-              <div>{{walletNetwork}}</div>
-              
-            </v-card-text>
-             <v-divider></v-divider>
-            <v-card-text>
-              <label>STATUS </label>
+              <label>Connected Wallet</label>
+              <div v-if="walletAddress"><v-icon small>mdi-wallet</v-icon> {{walletAddress}} <v-btn
+        elevation="0"
+        x-small
+        v-if="walletNetwork && targetNetwork === walletNetwork" :color="walletNetwork === 'rinkeby' ? 'orange' : 'success'" class="pa-1 mr-2">
+        {{walletNetwork}}
+      </v-btn></div>
+              <!-- <label>Wallet Network</label>
+              <div>{{walletNetwork}}</div> -->
+              <label>Access Status </label>
               <div v-if="balanceStatus"><v-icon large class="loading-icon">mdi-loading</v-icon> Loading ...</div>
               <div v-if="balanceStatus">{{balanceStatus}}</div>
               <div v-if="tokenBalances" class="token-list">
-              <div v-for="(value, id, index) in tokenBalances" :key="index" class="token-list-item text-center">
-                <div>#{{id}}: {{value}}
-                  <span v-if="value > 0"><v-icon small color="success" >mdi-check-bold</v-icon></span>
-                  <span v-if="value < 1"><v-icon small color="red" >mdi-close-thick</v-icon></span>
+              <div
+                v-if="tokenIdArray && !tokenBalances"
+                v-for="(id, index) in tokenIdArray"
+                :key="index"
+                class="token-list-item text-center">
+                <div>#{{id}}
+                  <!-- <span v-if="value > 0"><v-icon small color="success" >mdi-check-bold</v-icon></span>
+                  <span v-if="value < 1"><v-icon small color="red" >mdi-close-thick</v-icon></span> -->
                 </div>
                 <Nft
                   :id="`${id}`"
@@ -84,16 +93,33 @@
                   display="image"
                   elevation="1"
                   />
-                
               </div>
+              <v-card
+                outlined
+                v-for="(value, id, index) in tokenBalances"
+                :key="index"
+                class="token-list-item text-center mx-2">
+                <div>#{{id}} 
+                  <span class="status-icon" v-if="value > 0"><v-icon medium color="success" >mdi-check-circle</v-icon></span>
+                  <span class="status-icon" v-if="value < 1"><v-icon medium color="red" >mdi-close-circle</v-icon></span>
+                </div>
+                <Nft
+                  :id="`${id}`"
+                  contract="0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc"
+                  size="80"
+                  display="image"
+                  elevation="1"
+                  />
+                  <div >{{value}}</div>
+              </v-card>
             </div>
               <v-card
                 dark
                 flat
                 color="red"
-                class="pa-4"
+                class="pa-4 mt-4"
                 v-if="walletAddress && tokenBalances && !accessByBalance">
-                <h3>Access Denied</h3>
+                <h3>{{config.messages.failure}}</h3>
               </v-card>
             </v-card-text>
             <v-divider></v-divider>
@@ -165,7 +191,7 @@
               <v-btn text @click="() => setBalanceDialog(false)">Hide</v-btn>
             </v-card-actions>
           </v-card>
-        </v-dialog>
+    </v-dialog>
     <!-- <v-navigation-drawer
       v-model="rightDrawer"
       :right="right"
@@ -183,14 +209,14 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer> -->
-    <v-footer
+    <!-- <v-footer
       :absolute="!fixed"
       app
       
     >
       <span>&copy; {{ new Date().getFullYear() }}</span>
       <v-spacer />
-    </v-footer>
+    </v-footer> -->
   </v-app>
 </template>
 
@@ -237,7 +263,8 @@ export default {
       balanceStatus: "uiStore/balanceStatus",
       tokenBalances: "uiStore/tokenBalances",
       accessByBalance: "uiStore/accessByBalance",
-      
+      tokenIdArray: "uiStore/tokenIdArray",
+      config: "uiStore/config",
     }),
     userDialog: {
       get(){
@@ -277,7 +304,8 @@ export default {
     resetWallet(){
       this.$store.commit("uiStore/setWallet", null);
       this.$store.commit("uiStore/setWalletNetwork", null);
-      this.$store.commit("uiStore/setTokenBalances", null);
+      this.$store.commit("uiStore/setBalanceStatus", null);
+      this.$store.commit("uiStore/setTokenBalances", null, true); // true = reset
     },
     async handleConnect(doRedirect = true){
       console.log('handle', Web3Modal)
@@ -341,6 +369,10 @@ export default {
     // bordeR: 1px solid pink;
     text-align: center;
   }
+}
+.status-icon{
+  width: 1rem;
+  height: 1rem;
 }
 .v-application{
   /* background: linear-gradient(267deg, #29e1d9, #29a5e1); */

@@ -3,7 +3,7 @@ exports.CONFIG = {
   title: "dametime",
   targetNetwork: "rinkeby",
   mode: "balance",
-  min: 1,
+  minCount: 1,
   adminAddresses: [
     "0x29831f9c95c7Be7b7DE65be1cEee038390d8Dde8", // gareth brave
     // "0x03f0d81c9a73930b8034553fc54152cbd6958d0b", // gareth chrome
@@ -15,7 +15,7 @@ exports.CONFIG = {
     main: "0x",
   },
   nft: {
-    rinkeby: [1, 2, 3, 4, 5],
+    rinkeby: [1, 2, 3, 4],
     main: [23, 45],
   },
   messages: {
