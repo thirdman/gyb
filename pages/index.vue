@@ -6,8 +6,8 @@
         <h1>Home</h1>
       </div>
        
-       <div class="text-center">
-         <v-card
+      <div class="text-center">
+        <v-card
           outlined
           dark
           flat
@@ -15,9 +15,15 @@
           >
             <p>This page is visible to all users</p>
             <p>To obtain access connect an ethereum wallet that owns the Access NFT.</p>
-         </v-card>
-         
-      <div >
+        </v-card>
+      <div>
+      <div class="text-center" v-if="walletAddress">
+        
+            <v-btn outlined x-large @click="() => {this.$router.push('/gallery')}">
+              View hidden content
+            </v-btn>
+        
+      </div>
         
             <!-- <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 1, mode: 'gyb'})">Check Balance #1</v-btn>
             <v-btn :disabled="!walletAddress" @click="() => getChildBalance({tokenId: 2, mode: 'gyb'})">Check Balance #2</v-btn>
