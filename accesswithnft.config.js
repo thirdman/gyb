@@ -12,11 +12,11 @@ exports.CONFIG = {
   ],
   contract: {
     rinkeby: "0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc",
-    main: "0x",
+    main: "0xd07dc4262bcdbf85190c01c996b4c06a461d2430", // Rarible
   },
   nft: {
     rinkeby: [1, 2, 3, 4],
-    main: [23, 45],
+    main: [64307, 120615],
   },
   messages: {
     ready:

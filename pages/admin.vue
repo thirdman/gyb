@@ -32,7 +32,26 @@
             <label>Is Live</label>
             <div>{{config.isLive ? 'yes' : 'no'}}</div>
             <label>Target Network</label>
-            <div>{{config.targetNetwork}}</div>
+            <div class="row ma-0 pa-0"> 
+              
+            <v-btn
+              elevation="0"
+              x-small
+              v-if="config && config.targetNetwork" 
+              :color="config.targetNetwork === 'rinkeby' ? 'orange' : 'success'" 
+              class="pa-2 ma-4 ml-0"
+              >
+              {{config.targetNetwork}}
+            </v-btn>
+              
+            
+              <v-switch
+                v-model="isRinkeby"
+                inset
+                :label="`${isRinkeby ? 'Use Rinkeby Network' : ' Use Main Network'}`"
+              ></v-switch>
+            
+            </div>
           </v-card-text>
         </v-card>
         <v-card flat div class="mb-4" v-if="config">
@@ -53,19 +72,31 @@
                 <Nft id="1" contract="0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc" />
               </div>
             </div> -->
-            <div class="nft-list">
-            <div v-for="(nftId, index) in config.nft.rinkeby" :key="`rinkeby-#${index}`" class="nft-list-item">
-                #{{nftId.toString()}}
-                <br />
-                <Nft :id="`${nftId}`" contract="0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc" />
-            </div>
+            <div class="nft-list" v-if="config.targetNetwork === 'rinkeby'">
+              <div v-for="(nftId, index) in config.nft.rinkeby" :key="`rinkeby-#${index}`" class="nft-list-item">
+                  #{{nftId.toString()}}
+                  <br />
+                  <Nft :id="`${nftId}`" :contract="config.contract.rinkeby" />
+              </div>
             </div>
             <v-divider></v-divider>
             <label>Main Contract</label>
             <div>{{config.contract.main}}</div>
             <label>Main NFTs</label>
-            <div v-for="(nftId, index) in config.nft.main" :key="`main-#${index}`">
+            <!-- <div v-for="(nftId, index) in config.nft.main" :key="`main-#${index}`">
                 #{{nftId.toString()}}
+            </div> -->
+            <div class="nft-list" v-if="config.targetNetwork === 'main'">
+              <div v-for="(nftId, index) in config.nft.main" :key="`main-#${index}`" class="nft-list-item">
+                  #{{nftId.toString()}}
+                  <br />
+                  <Nft
+                    :id="`${nftId}`" 
+                    :contract="config.contract.main.toString()"
+                  />
+                  {{config.contract.main}}
+                  <!-- :contract="config.contract.main.toString()"  -->
+              </div>
             </div>
           </v-card-text>
         </v-card>
@@ -178,15 +209,13 @@ export default {
   mounted(){
     console.log('mounted', this.walletAddress)
     console.log('mounted', this.config)
-    if(this.walletAddress){
-      this.searchAddress = this.walletAddress
-    }
   },
   data() {
     return {
-      searchAddress: "0xb56d3a16afd1619aa9dbd99918c3ab70f1d41042",
+      
       tokenId: "",
-      url: "https://testnets.opensea.io/collection/unidentified-contract-vheq2nb5wa"
+      url: "https://testnets.opensea.io/collection/unidentified-contract-vheq2nb5wa",
+      
     }
   },
   computed: {
@@ -201,6 +230,18 @@ export default {
       balanceStatus: "uiStore/balanceStatus",
       accessByBalance: "uiStore/accessByBalance",
     }),
+    
+    isRinkeby: {
+      get(){
+        const {targetNetwork} = this.config;
+        return targetNetwork === 'rinkeby' ? true : false;
+      },
+      set(newState){
+        console.log('newstate', newState)
+        const newNetwork = newState ? 'rinkeby' : 'main'; // newstate is boolean, true = rinkeby
+        return this.setTargetNetwork(newNetwork)
+      } 
+    },
     hasAddress() {
       const {walletAddress} = this;
       if(walletAddress){
@@ -219,12 +260,10 @@ export default {
       getChildBalance: "uiStore/getChildBalance",
       getNftData: "uiStore/getNftData",
     }),
-    handleSetUser(){
-      const {walletAddress} = this;
-      //const {searchAddress = ''} = this;
-      this.searchAddress = walletAddress
-      this.$router.push(`/address/${walletAddress}`)
-    }
+    ...mapMutations({
+      setTargetNetwork: "uiStore/setTargetNetwork",
+    })
+    
   }
 }
 </script>

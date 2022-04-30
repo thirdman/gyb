@@ -59,7 +59,7 @@ export default {
     },
     contract: {
       type: String,
-      default: null
+      default: '0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc'
     },
     mode: {
       type: String,
@@ -94,16 +94,29 @@ export default {
     }
   },
   async fetch() {
-    const {id, mode = 'object'} = this;
+    const {id, contract, mode = 'object'} = this;
     this.status = 'loading'
-    const uriObject = await this.getNftData({mode: 'object', id: id, contract: '0xed9583b4a8e2baef0dbd7c274ad40c68abd765bc'}).catch((error) => {console.log('error', error)}).catch((error) => {console.log('uri object error', error)});
+    const uriObject = await this.getNftData({mode: 'object', id: id, contract: contract}).catch((error) => {console.log('error', error)}).catch((error) => {console.log('uri object error', error)});
     console.log('uri object', uriObject)
     if(!uriObject || typeof uriObject !== 'object'){
       this.status = 'error'
       return
     }
     const {attributes, name, created_by, external_url, description, image_details, image, image_url} = uriObject
-    this.data = {attributes, name, created_by, external_url, description, image_details, image, image_url}
+    
+    const ipfsPrefix = "ipfs://ipfs/";
+      // const ipfsProxyString = "https://ipfs.io/ipfs/";
+      const ipfsGatewayString = "https://gateway.pinata.cloud/ipfs/";
+      const cleanUrl = (url) => {
+        const ipfsId = url.substring(12, url.length);
+        return ipfsGatewayString + ipfsId;
+      };
+
+    const cleanedUrl =
+        image.substring(0, 12) === ipfsPrefix ? cleanUrl(image) : "abcd";
+
+
+    this.data = {attributes, name, created_by, external_url, description, image_details, image: cleanedUrl, image_url}
       console.log('this.data', this.data)
     if(!uriObject){
       this.status = 'error'

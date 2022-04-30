@@ -6,6 +6,8 @@ import {
   CONTRACT_ABI,
   PANDA_CONTRACT_ADDRESS,
   CONTRACT_ADDRESS,
+  MAIN_CONTRACT_ADDRESS,
+  MAIN_CONTRACT_ABI,
 } from "./constants.js";
 import { CONFIG } from "../accesswithnft.config.js";
 
@@ -65,6 +67,19 @@ export const getters = {
   userIsOwner: (state) => state.userIsOwner,
   tokenBalances: (state) => state.tokenBalances,
   balanceStatus: (state) => state.balanceStatus,
+  activeContractAddress: (state) => {
+    const network = state.config.targetNetwork;
+    const address =
+      network === "main"
+        ? state.config.contract.main
+        : state.config.contract.rinkeby;
+    return address;
+  },
+  activeContractABI: (state) => {
+    const network = state.config.targetNetwork;
+    const abi = network === "main" ? MAIN_CONTRACT_ABI : CONTRACT_ABI;
+    return abi;
+  },
   accessByBalance: (state) => {
     const { tokenBalances } = state;
     const tokenIdArray =
@@ -126,6 +141,11 @@ export const mutations = {
   },
   setWalletNetwork(state, value) {
     state.walletNetwork = value;
+  },
+  setTargetNetwork(state, value) {
+    const tempConfig = { ...state.config, targetNetwork: value };
+    console.log("setTargetNetwork", tempConfig);
+    state.config = tempConfig;
   },
   setContract(state, value) {
     state.ActiveContract = value;
@@ -258,14 +278,17 @@ export const actions = {
   },
 
   async getChildBalance(context, payload) {
-    const { commit, dispatch, state } = context;
+    console.log("context", context);
+    const { commit, dispatch, getters, state } = context;
     const { walletAddress } = state;
     const { tokenId, mode } = payload;
-    const ABI = CONTRACT_ABI;
+    const { activeContractABI, activeContractAddress } = getters;
+    const ABI = activeContractABI;
+    const ADDRESS = activeContractAddress;
     // const CONTRACT = CONTRACT_ADDRESS;
     // console.log("mode", { mode, ABI, CONTRACT });
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    var ActiveContract = new web3.eth.Contract(ABI, ADDRESS);
     if (!ActiveContract) {
       console.error("no ActiveContract");
       return;
@@ -310,16 +333,21 @@ export const actions = {
 
   // NFT URI
   async getNftData(context, payload) {
-    // const { commit } = context;
+    const { state, getters } = context;
+    // const { walletAddress } = state;
     const { mode = "uri", id = "1", contract } = payload;
-    console.log("getNftData", { mode, id, contract });
-    const ABI = CONTRACT_ABI;
+
+    const { activeContractABI, activeContractAddress } = getters;
+    const ABI = activeContractABI;
+    const ADDRESS = activeContractAddress;
+
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-    var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    var ActiveContract = new web3.eth.Contract(ABI, ADDRESS);
     if (!ActiveContract) {
       console.error("no ActiveContract");
       return;
     }
+    console.log("getNftData", { ActiveContract });
     const nftUri = await ActiveContract.methods
       .uri(id)
       .call()
@@ -333,7 +361,25 @@ export const actions = {
       return nftUri;
     }
     if (mode === "object") {
-      const { data, headers } = await this.$axios.get(nftUri);
+      const ipfsPrefix = "ipfs://ipfs/";
+      const ipfsProxyString = "https://ipfs.io/ipfs/";
+      const cleanUrl = (url) => {
+        const ipfsId = url.substring(12, url.length);
+        return ipfsProxyString + ipfsId;
+      };
+
+      const uriTarget =
+        nftUri.substring(0, 12) === ipfsPrefix ? cleanUrl(nftUri) : nftUri;
+
+      console.log(
+        "uriTarget",
+        uriTarget,
+        nftUri,
+        nftUri.substring(0, 12),
+        ipfsPrefix,
+        cleanUrl(nftUri)
+      );
+      const { data, headers } = await this.$axios.get(uriTarget);
       console.log("object result = ", data, headers);
       console.log("typeof data", typeof data);
       if (typeof data !== "object") {
