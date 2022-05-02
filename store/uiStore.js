@@ -2,9 +2,7 @@
 // import { v4 as uuidv4 } from "uuid";
 import Web3 from "web3";
 import {
-  PANDA_ABI,
   CONTRACT_ABI,
-  PANDA_CONTRACT_ADDRESS,
   CONTRACT_ADDRESS,
   MAIN_CONTRACT_ADDRESS,
   MAIN_CONTRACT_ABI,
@@ -147,6 +145,11 @@ export const mutations = {
     console.log("setTargetNetwork", tempConfig);
     state.config = tempConfig;
   },
+  setMode(state, value) {
+    console.log("setMode");
+    const tempConfig = { ...state.config, mode: value };
+    state.config = tempConfig;
+  },
   setContract(state, value) {
     state.ActiveContract = value;
   },
@@ -193,9 +196,8 @@ export const actions = {
   async checkOwner(context, payload) {
     const { commit, dispatch } = context;
     const { tokenId, mode = "panda" } = payload;
-    const ABI = mode === "panda" ? PANDA_ABI : CONTRACT_ABI;
-    const CONTRACT =
-      mode === "panda" ? PANDA_CONTRACT_ADDRESS : CONTRACT_ADDRESS;
+    const ABI = CONTRACT_ABI;
+    const CONTRACT = CONTRACT_ADDRESS;
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     console.log("mode", { mode, ABI, CONTRACT });
     var ActiveContract = new web3.eth.Contract(ABI, CONTRACT);
@@ -227,9 +229,8 @@ export const actions = {
     const { commit, dispatch, state } = context;
     const { walletAddress } = state;
     const { tokenId, mode } = payload;
-    const ABI = mode === "panda" ? PANDA_ABI : CONTRACT_ABI;
-    const CONTRACT =
-      mode === "panda" ? PANDA_CONTRACT_ADDRESS : CONTRACT_ADDRESS;
+    const ABI = CONTRACT_ABI;
+    const CONTRACT = CONTRACT_ADDRESS;
     console.log("mode", { mode, ABI, CONTRACT });
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
     var ActiveContract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);

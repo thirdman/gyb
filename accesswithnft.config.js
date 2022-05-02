@@ -2,7 +2,7 @@ exports.CONFIG = {
   isLive: true,
   title: "dametime",
   targetNetwork: "rinkeby",
-  mode: "balance",
+  mode: "all", // any
   minCount: 1,
   adminAddresses: [
     "0x29831f9c95c7Be7b7DE65be1cEee038390d8Dde8", // gareth brave

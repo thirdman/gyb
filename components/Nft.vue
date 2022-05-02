@@ -113,7 +113,7 @@ export default {
       };
 
     const cleanedUrl =
-        image.substring(0, 12) === ipfsPrefix ? cleanUrl(image) : "abcd";
+        image.substring(0, 12) === ipfsPrefix ? cleanUrl(image) : image;
 
 
     this.data = {attributes, name, created_by, external_url, description, image_details, image: cleanedUrl, image_url}

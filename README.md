@@ -1,4 +1,23 @@
-# GYB login with NFT
+# login with NFT
+
+This is a Nuxt/Vue based app deployed on Vercel, that allows viewing of private contnet if the user's wallet wons required nft
+
+NOTE:
+
+## Modes
+
+### 1. 'ALL' balance mode
+
+- Uses NFT that can have multiple editions. (Eg. Rarible #12345 can have 20 owners). Users must own one of ALL the defined
+  id's
+
+### 2. 'ANY' balance mode (TBD)
+
+- Uses a single NFT contract. This mode allows access by owning a minimul amount of NFT created by a contract. (eg. minimum 5 CryptoKitty NFT)
+
+### 3. 'SINGLE' balance mode (TBD)
+
+- Uses a single NFT id. This mode allows access by each single wallet that owns a unique NFT. (eg. CryptoKitty #12345). THis method would equate to giving access to a single waller.
 
 ## Build Setup
 

@@ -28,7 +28,54 @@
             <label>Title</label>
             <div>{{config.title}}</div>
             <label>Mode</label>
-            <div>{{config.mode}}</div>
+            <div><strong>{{config.mode}}</strong></div>
+            <v-btn-toggle
+              mandatory 
+            >
+            
+              <v-btn
+                x-large
+                :highlighted="accessMode === 'all'" @click="() => this.setMode('all')">
+                <v-icon>mdi-checkbox-multiple-marked-circle </v-icon>
+                <span>ALL</span>
+              </v-btn>
+              <!-- <v-btn :selected="accessMode === 'contain'" @click="() => this.tempMode = 'contain'">
+                <v-icon>mdi-checkbox-marked-circle</v-icon>
+                <span>Contains minimum balance</span>
+              </v-btn> -->
+              <v-btn
+                x-large  
+                :selected="accessMode === 'any'" 
+                @click="() => this.setMode('any')"
+                >
+                <v-icon>mdi-checkbox-multiple-marked</v-icon>
+                <span>ANY</span>
+              </v-btn>
+              <v-btn
+                x-large  
+                disabled
+                :selected="accessMode === 'single'" @click="() => this.setMode('single')">
+                <v-icon>mdi-checkbox-multiple-marked</v-icon>
+                <span>SINGLE </span>
+              </v-btn>
+            </v-btn-toggle>
+            <div>
+              <p v-if="accessMode === 'all'">ALL: The wallet must own each of the defined NFT. 
+                <br />This method requires the NFT to have multiple editions
+                <br />Eg. Must own one of Rarible NFT #2345, #4565, and #6789
+                </p>
+              <p v-if="accessMode === 'single'">
+                SINGLE (not available): wallet must own the unique
+              </p>
+              <p v-if="accessMode === 'any'">ANY: The wallet can contain any nft from a defined address. 
+                <br />This method allows the NFT to be unique
+                <br />Eg. Must contain at least {{config.minCount}} CryptoKitty NFT. (dependent on minCount setting)
+
+              </p>
+            </div>
+            <br />
+            <label>Minimum Count</label>
+            <div>{{config.minCount}}</div>
             <label>Is Live</label>
             <div>{{config.isLive ? 'yes' : 'no'}}</div>
             <label>Target Network</label>
@@ -212,7 +259,7 @@ export default {
   },
   data() {
     return {
-      
+      tempMode: 'balance',
       tokenId: "",
       url: "https://testnets.opensea.io/collection/unidentified-contract-vheq2nb5wa",
       
@@ -242,6 +289,16 @@ export default {
         return this.setTargetNetwork(newNetwork)
       } 
     },
+    accessMode: {
+      get(){
+        const {mode} = this.config;
+        return mode;
+      },
+      set(newState){
+        
+         return this.setMode(newState)
+      } 
+    },
     hasAddress() {
       const {walletAddress} = this;
       if(walletAddress){
@@ -262,6 +319,7 @@ export default {
     }),
     ...mapMutations({
       setTargetNetwork: "uiStore/setTargetNetwork",
+      setMode: "uiStore/setMode",
     })
     
   }
